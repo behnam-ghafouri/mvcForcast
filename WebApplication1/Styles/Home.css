@@ -1,0 +1,17 @@
+﻿body {
+    background-color: white
+}
+
+
+.badge 
+,.close
+
+{
+    padding-right: $badge-padding-x;
+    padding-left: $badge-padding-x;
+    margin-right: -$badge-padding-x;
+    font-size: inherit;
+    color: inherit;
+    text-shadow: none;
+}
+

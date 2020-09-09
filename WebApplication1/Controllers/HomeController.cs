@@ -5,9 +5,8 @@ using System.Web;
 using System.Web.Mvc;
 using System.Data.OleDb;
 using System.Data;
-using System.Web.DynamicData;
 using System.Web.Script.Serialization;
-
+using WebApplication1.Models;
 
 
 /*this part fetches all the styles they have doors in them*/
@@ -74,6 +73,39 @@ namespace WebApplication1.Controllers
 
                 return View();
             }
+
+
+            [HttpPost]
+            public ActionResult RcvJobs(string jb)
+            {
+                try
+                {
+                Glazing glazing = new Glazing();
+                var test = glazing.getXglazing();
+
+
+                string temp = jb;
+                string[] jobs = temp.Split(',');
+
+                foreach(string job in jobs)
+                {
+                    
+
+
+                }
+                
+
+
+
+                return Json(jb);
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+
+
         }
 
 

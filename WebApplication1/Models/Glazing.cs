@@ -10,7 +10,7 @@ namespace WebApplication1.Models
     {
         public string job { get; set; }
         public string floor { get; set; }
-
+ 
         public List<Glazing> getXglazing()
         {
 

@@ -78,26 +78,29 @@ namespace WebApplication1.Controllers
             [HttpPost]
             public ActionResult RcvJobs(string jb)
             {
+                List<Job> listOfJobsForReturn = new List<Job>();
                 try
+                {              
+
+
+                    string temp = jb;
+                    string[] jobs = temp.Split(',');
+
+                foreach (string job in jobs)
                 {
-                Glazing glazing = new Glazing();
-                var test = glazing.getXglazing();
+                    Job jobss = new Job();
 
+                    List<Job> tempjobs = jobss.getJobsExcludedFromGlazing(job);
 
-                string temp = jb;
-                string[] jobs = temp.Split(',');
-
-                foreach(string job in jobs)
-                {
-                    
-
+                    listOfJobsForReturn.AddRange(tempjobs);
 
                 }
+
+            
+
                 
 
-
-
-                return Json(jb);
+                return Json(listOfJobsForReturn);
                 }
                 catch (Exception ex)
                 {

@@ -35,7 +35,6 @@
         var ServerData = null;
         var selectstr = null;
         var RcvedJobs = null;
-        var table = null;
         var prepedReturnArr = [];
         $(document).ready(function () {
 
@@ -69,7 +68,7 @@
             $('select').selectpicker();
             $('.selectpicker').selectpicker('refresh');
 
-
+            //on click the search button it does ajax and calls draw table
             $("#btnGet").click(function () {
                 $.ajax({
                     async: "true",
@@ -82,7 +81,7 @@
 
                         RcvedJobs = response
                         drawTable(RcvedJobs);
-                        console.log(RcvedJobs)
+                        
                     },
                     failure: function (response) {
                         alert(response.responseText);
@@ -92,6 +91,7 @@
                     }
                 });
             });
+
             //initialize tabel here on ready
             var table = $('#GlazingReport').DataTable({
                 //"data": input,
@@ -139,44 +139,59 @@
 
         });
 
-        function drawTable(RcvedJobs) {
-
-            var Internall = [];
-            RcvedJobs.forEach(elm => {
-
+        //inside the RcvedJobs we have job floor and tags but for showing them to user we have to group them just by job  ==> not floor not tag 
+        function getUniqDataForJob(input) {
+            var input_ = JSON.parse(JSON.stringify(input))
+            var output = [];
+                
+            input_.forEach(elm => {
                 var flag = true;
-
-                Internall.forEach(elm2 => {
+                output.forEach(elm2 => {
                     if (elm.job == elm2.job) {
                         flag = false;
                     }
                 })
 
                 if (flag) {
-                    Internall.push(elm);
+                    output.push(elm);
                 }
             })
+            return output;
+        }
+
+            function getUniqDataForAllJobFloor(input) {
+
+                var input_ = JSON.parse(JSON.stringify(input))
+                var output = [];
+
+                input_.forEach(elm => {
+                    var flag = true;
+                    output.forEach(elm2 => {
+                        if (elm.job == elm2.job && elm.floor == elm2.floor) {
+                            flag = false;
+                        }
+                    })
+                    if (flag) {
+                        output.push(elm);
+                    }
+                })
+
+                return output;
+            }
 
 
+        function drawTable(input) {                
+            prepedReturnArr = getUniqDataForAllJobFloor(input)
             $('#GlazingReport').DataTable().clear();
-            $('#GlazingReport').DataTable().rows.add(Internall).draw();
+            $('#GlazingReport').DataTable().rows.add(getUniqDataForJob(input)).draw();
         }
 
         //click on green plus on each rows in tabel trigers this function
         function format(d) {
             //var Internall = [];
+            console.log("data in RcvedJobs", RcvedJobs )
             console.log("before", prepedReturnArr)
-            RcvedJobs.forEach(elm => {
-                var flag = true;
-                prepedReturnArr.forEach(elm2 => {
-                    if (elm.job == elm2.job && elm.floor == elm2.floor) {
-                        flag = false;
-                    }
-                })
-                if (flag) {
-                    prepedReturnArr.push(elm);
-                }
-            })
+            
             // `d` is the original data object for the row
             var temp = '<table style="padding: 0.5%; border: 1px solid #ccc;   border-radius: 3px;margin-left: 1%;margin-right: 1%;"><thead><tr><th>FLOORS</th><th><input onclick="selectall(this)" value="' + d.job +'"   type="checkbox"> select all</th></tr></thead> <tbody>	';
 

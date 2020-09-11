@@ -50,13 +50,24 @@ namespace WebApplication1.Controllers
             public ActionResult Index()
             {
 
-                GlazingPR test = new GlazingPR();
+            //GlazingPR test = new GlazingPR();
 
-                var test2 = test.GetGlazingPRMultiple();
-                var jsonSerialiser = new JavaScriptSerializer();
-                 ViewBag.json = jsonSerialiser.Serialize(test2);
+            //var test2 = test.GetGlazingPRMultiple();
+            //var jsonSerialiser = new JavaScriptSerializer();
 
-                 return View();
+            //List<List<Job>> JobsList =new List<List<Job>>();
+            //foreach(string onejob in test2)
+            //{
+            //Job jobs = new Job();
+            //JobsList.Add(jobs.getJobsExcludedFromGlazing(onejob));
+            //}
+
+            JobTable test = new JobTable();
+            var ttt = test.getAllJobTables();
+
+                // ViewBag.json = jsonSerialiser.Serialize(test2);
+
+            return View();
             }
 
             [HttpPost]
@@ -75,157 +86,38 @@ namespace WebApplication1.Controllers
             }
 
 
-            [HttpPost]
-            public ActionResult RcvJobs(string jb)
-            {
-                List<Job> listOfJobsForReturn = new List<Job>();
-                try
-                {              
+            //[HttpPost]
+            //public ActionResult RcvJobs(string jb)
+            //{
+            //    List<Job> listOfJobsForReturn = new List<Job>();
+            //    try
+            //    {              
 
 
-                    string temp = jb;
-                    string[] jobs = temp.Split(',');
+            //        string temp = jb;
+            //        string[] jobs = temp.Split(',');
 
-                foreach (string job in jobs)
-                {
-                    Job jobss = new Job();
+            //    foreach (string job in jobs)
+            //    {
+            //        Job jobss = new Job();
 
-                    List<Job> tempjobs = jobss.getJobsExcludedFromGlazing(job);
+            //        List<Job> tempjobs = jobss.getJobsExcludedFromGlazing(job);
 
-                    listOfJobsForReturn.AddRange(tempjobs);
+            //        listOfJobsForReturn.AddRange(tempjobs);
 
-                }
-
-            
+            //    }        
 
                 
 
-                return Json(listOfJobsForReturn);
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            }
+            //    return Json(listOfJobsForReturn);
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        throw ex;
+            //    }
+            //}
 
 
         }
-
-
-
-    public class Schemajobs
-    {
-        public string job_ { get; set; }
-    }
-
-
-
-
-
-    public class GlazingPR
-    {
-        public String job { get; set; }
-
-
-
-        public List<string> GetGlazingPRMultiple()
-        {
-
-            try
-            {
-                string ConnectionString = @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Users\bghafouri\OneDrive - Quest Window Systems Inc\Desktop\New folder\Quest.mdb;";
-                OleDbConnection connection = new OleDbConnection(ConnectionString);
-                connection.Open();
-                System.Data.DataTable dt = null;
-
-
-                // Get the data table containing the schema
-                dt = connection.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null);
-
-
-                List<Schemajobs> schemajobslist = new List<Schemajobs>();
-
-                schemajobslist = (from DataRow dr in dt.Rows
-                                  where dr["TABLE_NAME"].ToString().Length == 3
-                                  select new Schemajobs()
-                                  {
-                                      job_ = dr["TABLE_NAME"].ToString()
-                                  }
-                                    ).ToList();
-
-
-                string str_SQL = "SELECT JOB FROM z_jobs where Completed = 0";
-
-                OleDbCommand command = new OleDbCommand(str_SQL, connection);
-
-                OleDbDataReader reader = command.ExecuteReader();
-
-                //this is all the jobs from z_jobs
-                List<string> xjobslist = new List<string>();
-
-                while (reader.Read())
-                {
-                    xjobslist.Add(reader["JOB"].ToString());
-                }
-
-                //finaly all of the jobs that we need to check are in this variable
-                List<string> goodjobs = new List<string>();
-
-                foreach (string x in xjobslist)
-                {
-                    bool flag = false;
-
-                    foreach (Schemajobs y in schemajobslist)
-                    {
-                        if (y.job_ == x)
-                        {
-                            flag = true;
-                        }
-                    }
-
-                    if (flag) { goodjobs.Add(x); }
-                }
-
-                return goodjobs;
-
-            }
-            catch (Exception)
-            {
-                return new List<string>();
-            }
-
-        }
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 }

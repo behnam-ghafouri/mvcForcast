@@ -126,6 +126,7 @@
     </Compile>
     <Compile Include="Models\Glazing.cs" />
     <Compile Include="Models\Job.cs" />
+    <Compile Include="Models\JobTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -32,132 +32,143 @@
 
 
     <script>
-        var ServerData = null;
-        var selectstr = null;
-        var RcvedJobs = null;
-        var prepedReturnArr = [];
-        $(document).ready(function () {
+            var ServerData = null;
+            var selectstr = null;
+            var RcvedJobs = null;
+            var prepedReturnArr = [];
 
-            ServerData = $("#customInput").data("value");
+            $(document).ready(function () {
 
-            ServerData.forEach(elm => {
-                selectstr = selectstr + `<option>` + elm + `</option>`
+                ServerData = $("#customInput").data("value");
+                console.log("data first we have", ServerData)
+                ServerData.forEach(elm => {
+                    selectstr = selectstr + `<option>` + elm + `</option>`
 
-            })
-
-
-            $(".selectpicker")
-                .html(selectstr)
-                .selectpicker('refresh');
-
-
-
-            $("select.jobs").change(function () {
-                var selectedJobs = new Array();
-                $("option:selected").each(function () {
-                    selectedJobs.push($(this).val());
-                });
-                selectstr = selectedJobs.toString();
-
-                $('#btnGet').prop('disabled', false);
-                if (selectstr.length == 0) {
-                    $('#btnGet').prop('disabled', true);
-                }
-            });
-
-            $('select').selectpicker();
-            $('.selectpicker').selectpicker('refresh');
-
-            //on click the search button it does ajax and calls draw table
-            $("#btnGet").click(function () {
-                $.ajax({
-                    async: "true",
-                    type: "POST",
-                    url: "/Home/RcvJobs",
-                    data: JSON.stringify({ jb: selectstr }),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
-                    success: function (response) {
-
-                        RcvedJobs = response
-                        drawTable(RcvedJobs);
-                        
-                    },
-                    failure: function (response) {
-                        alert(response.responseText);
-                    },
-                    error: function (response) {
-                        alert(response.responseText);
-                    }
-                });
-            });
-
-            //initialize tabel here on ready
-            var table = $('#GlazingReport').DataTable({
-                //"data": input,
-                select: "single",
-                "searching": false,
-                "paging": false,
-                "columns": [
-                    {
-                        "className": 'details-control',
-                        "orderable": false,
-                        "data": null,
-                        "defaultContent": '',
-                    },
-                    { "data": "job" },
-
-
-                ],
-                "order": [[1, 'asc']]
-            });
-
-
-            //click on data tabel row
-            $('#GlazingReport tbody').on('click', 'td.details-control', function () {
-                var tr = $(this).closest('tr');
-                var tdi = tr.find("i.fa");
-                var row = table.row(tr);
-                
-                //prepReturnArr(tr[0].innerHTML.substring(56, 59), prepedReturnArr)
-
-                if (row.child.isShown()) {
-                    // This row is already open - close it
-                    row.child.hide();
-                    tr.removeClass('shown');
-                    tdi.first().removeClass('fa-minus-square');
-                    tdi.first().addClass('fa-plus-square');
-                }
-                else {
-                    // Open this row
-                    row.child(format(row.data())).show();
-                    tr.addClass('shown');
-                    tdi.first().removeClass('fa-plus-square');
-                    tdi.first().addClass('fa-minus-square');
-                }
-            });
-
-        });
-
-        //inside the RcvedJobs we have job floor and tags but for showing them to user we have to group them just by job  ==> not floor not tag 
-        function getUniqDataForJob(input) {
-            var input_ = JSON.parse(JSON.stringify(input))
-            var output = [];
-                
-            input_.forEach(elm => {
-                var flag = true;
-                output.forEach(elm2 => {
-                    if (elm.job == elm2.job) {
-                        flag = false;
-                    }
                 })
 
-                if (flag) {
-                    output.push(elm);
-                }
-            })
-            return output;
-        }
+
+                $(".selectpicker")
+                    .html(selectstr)
+                    .selectpicker('refresh');
+
+
+
+                $("select.jobs").change(function () {
+                    var selectedJobs = new Array();
+                    $("option:selected").each(function () {
+                        selectedJobs.push($(this).val());
+                    });
+                    selectstr = selectedJobs.toString();
+
+                    $('#btnGet').prop('disabled', false);
+                    if (selectstr.length == 0) {
+                        $('#btnGet').prop('disabled', true);
+                    }
+                    $("#clear_addon").on("click", function () {
+                        $(".selectpicker").prop('selectedIndex', -1)
+                        $('.selectpicker').selectpicker('refresh');
+                        selectstr = [];
+                        $('#btnGet').prop('disabled', true);
+
+
+
+                    })
+                });
+
+                $('select').selectpicker();
+                $('.selectpicker').selectpicker('refresh');
+
+                //on click the search button it does ajax and calls draw table
+                $("#btnGet").click(function () {
+                    $.ajax({
+                        async: "true",
+                        type: "POST",
+                        url: "/Home/RcvJobs",
+                        data: JSON.stringify({ jb: selectstr }),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
+                        success: function (response) {
+
+                            RcvedJobs = response
+                            drawTable(RcvedJobs);
+                            console.log("data we need ", RcvedJobs)
+                            console.log("data we have ", ServerData)
+                        },
+                        failure: function (response) {
+                            alert(response.responseText);
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+                });
+
+                //initialize tabel here on ready
+                var table = $('#GlazingReport').DataTable({
+                    //"data": input,
+                    select: "single",
+                    "searching": false,
+                    "paging": false,
+                    "columns": [
+                        {
+                            "className": 'details-control',
+                            "orderable": false,
+                            "data": null,
+                            "defaultContent": '',
+                        },
+                        { "data": "job" },
+
+
+                    ],
+                    "order": [[1, 'asc']]
+                });
+
+
+                //click on data tabel row
+                $('#GlazingReport tbody').on('click', 'td.details-control', function () {
+                    var tr = $(this).closest('tr');
+                    var tdi = tr.find("i.fa");
+                    var row = table.row(tr);
+
+                    //prepReturnArr(tr[0].innerHTML.substring(56, 59), prepedReturnArr)
+
+                    if (row.child.isShown()) {
+                        // This row is already open - close it
+                        row.child.hide();
+                        tr.removeClass('shown');
+                        tdi.first().removeClass('fa-minus-square');
+                        tdi.first().addClass('fa-plus-square');
+                    }
+                    else {
+                        // Open this row
+                        row.child(format(row.data())).show();
+                        tr.addClass('shown');
+                        tdi.first().removeClass('fa-plus-square');
+                        tdi.first().addClass('fa-minus-square');
+                    }
+                });
+
+            });
+
+            //inside the RcvedJobs we have job floor and tags but for showing them to user we have to group them just by job  ==> not floor not tag
+            function getUniqDataForJob(input) {
+                var input_ = JSON.parse(JSON.stringify(input))
+                var output = [];
+
+                input_.forEach(elm => {
+                    var flag = true;
+                    output.forEach(elm2 => {
+                        if (elm.job == elm2.job) {
+                            flag = false;
+                        }
+                    })
+
+                    if (flag) {
+                        output.push(elm);
+                    }
+                })
+                return output;
+            }
 
             function getUniqDataForAllJobFloor(input) {
 
@@ -172,71 +183,91 @@
                         }
                     })
                     if (flag) {
-                        output.push(elm);
+                        output.push({job: elm.job, floor: elm.floor, checked: ""});
                     }
                 })
-
                 return output;
             }
 
 
-        function drawTable(input) {                
-            prepedReturnArr = getUniqDataForAllJobFloor(input)
-            $('#GlazingReport').DataTable().clear();
-            $('#GlazingReport').DataTable().rows.add(getUniqDataForJob(input)).draw();
-        }
+            function drawTable(input) {
+                prepedReturnArr = getUniqDataForAllJobFloor(input)
+                $('#GlazingReport').DataTable().clear();
+                $('#GlazingReport').DataTable().rows.add(getUniqDataForJob(input)).draw();
+            }
 
-        //click on green plus on each rows in tabel trigers this function
-        function format(d) {
-            //var Internall = [];
-            console.log("data in RcvedJobs", RcvedJobs )
-            console.log("before", prepedReturnArr)
-            
-            // `d` is the original data object for the row
-            var temp = '<table style="padding: 0.5%; border: 1px solid #ccc;   border-radius: 3px;margin-left: 1%;margin-right: 1%;"><thead><tr><th>FLOORS</th><th><input onclick="selectall(this)" value="' + d.job +'"   type="checkbox"> select all</th></tr></thead> <tbody>	';
+            //click on green plus on each rows in tabel trigers this function
+            function format(d) {
+                //var Internall = [];
+                //console.log("data in RcvedJobs", RcvedJobs)
+                //console.log("before", prepedReturnArr)
 
-            prepedReturnArr.forEach(elm => {
-                if (elm.job == d.job) {
-                    temp = temp + '<tr><td>' + elm.floor + '</td><td class="c"><input onclick="selectall(this)"  class="' + elm.job + '  allinputs " value= '+JSON.stringify(elm)+' type="checkbox"></td></tr>'
-                }
-            })
-            temp = temp + ' </tbody></table>'
-            console.log("after", prepedReturnArr)
-            return temp
-        }
-     
-        function serach() {
-            
-        }
-        function selectall(input) {
-            
-            for (item of document.getElementsByClassName(input.value)) {
-                if (input.checked == true) {
-                    item.checked = true;
-                }
-                if (input.checked == false) {
-                    item.checked = false;
-                }                
-            }                     
-        }
+                // `d` is the original data object for the row
+                var temp = '<table style="padding: 0.5%; border: 1px solid #ccc;   border-radius: 3px;margin-left: 1%;margin-right: 1%;"><thead><tr><th>FLOORS</th><th><input onclick="selectall(this)" value="' + d.job + '"   type="checkbox"> select all</th></tr></thead> <tbody>	';
 
-        function prepReturnArr(job) {
-           
-            for (eachinput of document.querySelectorAll(".allinputs")) {
-                if (eachinput.checked == true) {
-                    
-                    prepedReturnArr.push(JSON.parse(eachinput.value))
+                prepedReturnArr.forEach(elm => {
+                    if (elm.job == d.job) {
+                        temp = temp + '<tr><td>' + elm.floor + '</td><td class="c"><input onclick="selectsingle(this)"  class="' + elm.job + ' " value='+JSON.stringify(elm)+' type="checkbox" ' + elm.checked + '></td></tr>'
+                    }
+                })
+                temp = temp + ' </tbody></table>'
+                //console.log("after", prepedReturnArr)
+                return temp
+            }
+
+            function serach() {
+
+            }
+            //select or deselect all floors for one job
+            function selectall(input) {
+                
+                for (item of document.getElementsByClassName(input.value)) {
+                    if (input.checked == true) {
+                        item.checked = true;
+                    }
+                    if (input.checked == false) {
+                        item.checked = false;
+                    }
                 }
                 
+                
+                prepedReturnArr.forEach(elm => {
+                    
+                    if (elm.job == input.value) {
+                        
+                        if (input.checked == true) {
+                            elm.checked = "checked";
+                        }
+                        if (input.checked == false) {
+                            elm.checked = "";
+                        }
+                    }
+                })
+                console.log(prepedReturnArr)
             }
-            console.log(prepedReturnArr)
-        }
+            //if user clicks on every single floor it loops throw prepedReturnArr and changes the status of the checked property
+            function selectsingle(input) {
+
+                var temp = JSON.parse(input.value);
+
+                prepedReturnArr.forEach(elm => {
+                    if (elm.job == temp.job && elm.floor == temp.floor) {
+                        if (input.checked == false) {
+                            elm.checked = "";
+                        }
+                        if (input.checked == true) {
+                            elm.checked = "checked"
+                        }
+                    }
+                })
+                console.log(prepedReturnArr)
+            }
+
+           
 
     </script>
 
     <style>
-
-
         td.details-control {
             background: url('https://datatables.net/examples/resources/details_open.png') no-repeat center center;
             cursor: pointer;
@@ -252,10 +283,26 @@
 
     <select id="ddlJobs" class="selectpicker jobs " data-live-search="true" multiple>
     </select>
-
-
-    <button id="btnGet" disabled>search!</button>
-
+    <button class="btn btn-danger btn-sm" id="clear_addon">X</button>
+    <button class="btn btn-danger" id="btnGet" disabled>SEARCH</button>
+    <label class="checkbox-inline">
+        <input id="Line1" type="checkbox" style="color:black; font:Arial" value="1111" checked>Swing Door
+    </label>
+    <label class="checkbox-inline">
+        <input id="Line1" type="checkbox" style="color:black; font:Arial" value="1111" checked>Awning
+    </label>
+    <label class="checkbox-inline">
+        <input id="Line1" type="checkbox" style="color:black; font:Arial" value="1111" checked>Shift
+    </label>
+    <label class="checkbox-inline">
+        <input id="Line1" type="checkbox" style="color:black; font:Arial" value="1111" checked>R3
+    </label>
+    <label class="checkbox-inline">
+        <input id="Line1" type="checkbox" style="color:black; font:Arial" value="1111" checked>Spandrel
+    </label>
+    <label class="checkbox-inline">
+        <input id="Line1" type="checkbox" style="color:black; font:Arial" value="1111" checked>Shadowbox
+    </label>
 
     <div>
 

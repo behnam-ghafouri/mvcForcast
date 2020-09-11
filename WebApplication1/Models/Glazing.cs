@@ -14,8 +14,8 @@ namespace WebApplication1.Models
         public List<Glazing> getXglazing()
         {
 
-            OleDbConnection connection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Users\bghafouri\OneDrive - Quest Window Systems Inc\Desktop\New folder\Quest.mdb;");
-
+            // OleDbConnection connection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Users\bghafouri\OneDrive - Quest Window Systems Inc\Desktop\New folder\Quest.mdb;");
+            OleDbConnection connection = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Users\dmerchant\Frameworks\Quest.mdb;");
             string str_SQL = "select  job, floor from x_Glazing where firstcomplete='True' group by JOB,  FLOOR";
             connection.Open();
             OleDbCommand command = new OleDbCommand(str_SQL, connection);

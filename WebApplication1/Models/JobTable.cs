@@ -6,9 +6,7 @@ using System.Web;
 using System.Data.OleDb;
 using System.Data;
 using System.Web.Script.Serialization;
-
-
-
+using Newtonsoft.Json;
 
 namespace WebApplication1.Models
 {
@@ -26,12 +24,10 @@ namespace WebApplication1.Models
     public class JobTable
     {
        
-        public List<List<Job>> jobtable = new List<List<Job>>();
-
-        public string getAllJobTables()
+        public static string getAllJobTables()
         {
-            JobTable jobTables = new JobTable();
-            string i;
+           
+            
             try
             {
                 string ConnectionString = @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Users\bghafouri\OneDrive - Quest Window Systems Inc\Desktop\New folder\Quest.mdb;";
@@ -85,29 +81,29 @@ namespace WebApplication1.Models
                     }
 
                     if (flag) { goodjobs.Add(x); }
-                }
+                }         
 
+                List<Job> data = new List<Job>();
                 
-
-               // List<List<Job>> listofJobs = new List<List<Job>>();
-                foreach(string onejob in goodjobs)
+                foreach (string onejob in goodjobs)
                 {
-                    i = onejob;
                     Job job = new Job();
-                   // List<Job> test = job.getJobsExcludedFromGlazing(onejob);
-                    jobTables.jobtable.Add(job.getJobsExcludedFromGlazing(onejob));
-
+                    if (job.getJobsExcludedFromGlazing(onejob).Count() != 0)
+                    {
+                        foreach (Job elm in job.getJobsExcludedFromGlazing(onejob))
+                        {
+                            data.Add(elm);
+                        }
+                    }
                 }
 
-               // var jsonSerialiser = new JavaScriptSerializer();
-
-                return "ok worksss";
+                return JsonConvert.SerializeObject(data.ToArray());
             }
             
             catch (Exception ex)
             {
-                var test = ex;
-                return "problem happend";
+              var test = ex;
+                return "problem happend in the JobTable Model" + ex.ToString();
             }
         }
 

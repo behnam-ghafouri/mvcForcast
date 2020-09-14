@@ -50,24 +50,9 @@ namespace WebApplication1.Controllers
             public ActionResult Index()
             {
 
-            //GlazingPR test = new GlazingPR();
+                ViewBag.json = JobTable.getAllJobTables();
 
-            //var test2 = test.GetGlazingPRMultiple();
-            //var jsonSerialiser = new JavaScriptSerializer();
-
-            //List<List<Job>> JobsList =new List<List<Job>>();
-            //foreach(string onejob in test2)
-            //{
-            //Job jobs = new Job();
-            //JobsList.Add(jobs.getJobsExcludedFromGlazing(onejob));
-            //}
-
-            JobTable test = new JobTable();
-            var ttt = test.getAllJobTables();
-
-                // ViewBag.json = jsonSerialiser.Serialize(test2);
-
-            return View();
+                return View();
             }
 
             [HttpPost]

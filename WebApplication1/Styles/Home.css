@@ -1,17 +1,143 @@
-﻿body {
-    background-color: white
+﻿td {
+    word-break: break-all;
 }
 
-
-.badge 
-,.close
-
-{
-    padding-right: $badge-padding-x;
-    padding-left: $badge-padding-x;
-    margin-right: -$badge-padding-x;
-    font-size: inherit;
-    color: inherit;
-    text-shadow: none;
+body {
+    font-family: Arial;
+    font-size: 12px;
 }
 
+text {
+    font-size: 12px !important;
+}
+
+.navbar-nav > li > a {
+    color: #15a9df !important
+}
+
+.btn-primary {
+    background-color: #15a9df !important;
+    margin-right: 15px !important;
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+    float: right;
+}
+
+    .btn-primary:hover {
+        color: rgb(199, 199, 199);
+    }
+
+.title-main {
+    background-color: rgb(255, 255, 255) !important;
+    padding-left: 0px;
+}
+
+/* 237 */
+div.dt-buttons {
+    float: right;
+    background-image: -webkit-linear- none !important;
+    background-image: none !important;
+}
+
+.csTable tr:nth-child(odd) {
+    background-color: #eaeaea;
+    color: #000;
+}
+
+.csTable {
+    border: 1px solid #cccccc;
+}
+
+    .csTable tr:nth-child(even) {
+        background-color: #fff;
+        color: #000;
+    }
+
+    .csTable td,
+    .csTable th {
+        padding-right: 10px;
+        height: 30px;
+        font-size: 14px;
+        padding-left: 10px;
+    }
+
+
+
+#dialog-form > fieldset > input {
+    width: 90% !important;
+}
+
+.ui-dialog .ui-dialog-content {
+    overflow: hidden !important;
+}
+
+fieldset {
+    border: 1px solid transparent;
+    border-radius: 5px;
+    margin-bottom: 11px;
+}
+
+.csDialogRow {
+    border: 1px solid black;
+    clear: both;
+}
+
+    .csDialogRow > label {
+        width: 120px;
+        float: left !important;
+        border: 1px solid black;
+    }
+
+    .csDialogRow > input {
+        width: 440px !important;
+        float: left !important;
+        border: 1px solid black;
+        margin-left: 0px !important;
+        margin-top: 0px !important;
+        padding-left: 5px !important;
+    }
+
+.row > input:not([type|=radio]):not([type|=checkbox]) {
+    padding-left: 5px !important;
+}
+
+.row > table > tbody > tr > td > input:not([type|=radio]):not([type|=checkbox]) {
+    padding-left: 5px !important;
+}
+
+select {
+    border: 1px solid rgb(221, 221, 221) !important;
+    border-radius: 5px;
+    padding: 3px 3px 3px 3px;
+    margin-bottom: 5px;
+    height: 35px;
+    font-size: 16px;
+}
+
+body.landscape > .toolbar > h1 {
+    width: 350px !important;
+}
+
+.csSearch > tbody > tr > td {
+    padding-left: 20px;
+}
+
+.csTData {
+    text-align: center;
+    font-size: 13px;
+}
+
+.csTDataAmt {
+    text-align: right;
+    padding-right: 5px;
+    font-size: 13px;
+}
+
+.csCheckBox {
+    width: 20px !important;
+}
+
+.download_Button {
+    justify-content: center;
+    display: flex;
+}

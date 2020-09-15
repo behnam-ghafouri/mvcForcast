@@ -23,7 +23,6 @@ namespace WebApplication1.Models
         {           
             try
             {
-                string ConnectionString = @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Users\bghafouri\OneDrive - Quest Window Systems Inc\Desktop\New folder\Quest.mdb;";
                 OleDbConnection connection = new OleDbConnection(Conection.getConectionString());
                 connection.Open();
                 System.Data.DataTable dt = null;

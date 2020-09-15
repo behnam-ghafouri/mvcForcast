@@ -71,23 +71,48 @@ namespace WebApplication1.Controllers
 
 
         [HttpPost]
-        public ActionResult RcvJobs(string jobquery)
+        public ActionResult RcvJobs(string jobquery , string[] stylesWeLookFor)
         {
+            List<string> tempstylesWeLookFor = new List<string>();
+
+            tempstylesWeLookFor.Add("SW");
+            tempstylesWeLookFor.Add("AW");
+
             try
             {
-                //var json_serializer = new JavaScriptSerializer();
-                //Job routes_list = json_serializer.Deserialize<Job>(jobquery);
-                var test = jobquery;
+                //convert the type to list of job
+                var json_serializer = new JavaScriptSerializer();
+                List<Job> jobFromFrontendForQuery = json_serializer.Deserialize<List<Job>>(jobquery);
 
+
+                //taking all of the R3 and awning property from z_jobs
+                Job preparedobjectofrecvjobs = new Job(jobFromFrontendForQuery);
+
+
+                //reads and calculets all the types from style table 
+                Style styleObject = new Style();
+
+              
+
+                foreach(StyleDetail elm in styleObject.styletable_)
+                {
+                    if( elm.name_ == "8023" || elm.name_ == "8015" || elm.name_ == "8007" || elm.name_ == "8000")
+                    {
+                        var ffffff = 0;
+                    }
+                }
+               
 
                 var trr = Json(JobTable.getAllJobTables());
-                 
                 return trr;
+
             }
             catch (Exception ex)
             {
-                throw ex;
+
+                return null;
             }
+
         }
 
 

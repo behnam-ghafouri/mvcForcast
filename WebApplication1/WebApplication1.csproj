@@ -129,6 +129,7 @@
     <Compile Include="Models\Jobestimate.cs" />
     <Compile Include="Models\JobTable.cs" />
     <Compile Include="Models\Style.cs" />
+    <Compile Include="Models\StyleDetail.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

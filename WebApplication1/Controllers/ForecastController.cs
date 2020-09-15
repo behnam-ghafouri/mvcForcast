@@ -53,7 +53,7 @@ namespace WebApplication1.Controllers
             }
 
             [HttpPost]
-            public ActionResult RcvJobs(string jobquery , string[] stylesWeLookFor)
+            public ActionResult RcvJobs(string jobquery , string[] stylesWeLookFor,string reportname)
             {
                 List<string> tempstylesWeLookFor = new List<string>();
 

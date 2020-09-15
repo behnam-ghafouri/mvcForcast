@@ -11,27 +11,20 @@ using Newtonsoft.Json;
 namespace WebApplication1.Models
 {
 
-
-
     public class Schemajobs
     {
         public string job_ { get; set; }
     }
 
-
-
-
     public class JobTable
     {
        
-        public static string getAllJobTables()
-        {
-           
-            
+        public static List<Job> getAllJobTables()
+        {           
             try
             {
                 string ConnectionString = @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Users\bghafouri\OneDrive - Quest Window Systems Inc\Desktop\New folder\Quest.mdb;";
-                OleDbConnection connection = new OleDbConnection(ConnectionString);
+                OleDbConnection connection = new OleDbConnection(Conection.getConectionString());
                 connection.Open();
                 System.Data.DataTable dt = null;
 
@@ -97,13 +90,16 @@ namespace WebApplication1.Models
                     }
                 }
 
-                return JsonConvert.SerializeObject(data.ToArray());
+                return data;
+                
             }
             
             catch (Exception ex)
             {
-              var test = ex;
-                return "problem happend in the JobTable Model" + ex.ToString();
+              
+                List<Job> data = new List<Job>();
+                data.Add(new Job() { job = ex.ToString() });
+                return data;
             }
         }
 

@@ -1,269 +1,264 @@
-﻿@*@Styles.Render("~/Styles/Home.css")*@
-@*@Scripts.Render("~/bundles/jquery")*@
-@*@Scripts.Render("~/bundles/bootstrap")*@
-@*@Scripts.Render("~/Scripts/ForcasteReport.js")*@
-
-
-
+﻿
+@using WebApplication1.Models
+@using System.Collections.Generic
+@model List<Job>
+@using System.Web.Script.Serialization
+@using Newtonsoft.Json.Linq
+@using Newtonsoft.Json
 
 
 
 
 <html>
 <head>
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    @*<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>*@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-
-
-
-
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
-
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.css">
-
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
 
 
 
+
+
     <script>
-            var ServerData = null;
-            var selectstr = null;
-            var RcvedJobs = null;
-            var prepedReturnArr = [];
+        var ServerData = "Empty";
+        var table = null;
+        var prepedReturnArr = [];
 
-            $(document).ready(function () {
-                ServerData = $("#customInput").data("value");
-                //JSON.parse(ServerData)
-                console.log("data first we have", ServerData)
-                //ServerData.forEach(elm => {
-                //    selectstr = selectstr + `<option>` + elm + `</option>`
+        $(document).ready(function () {
+            mainfunction()
+         
+            //$('#GlazingReport').DataTable().destroy();          
 
-                //})
-
-
-                $(".selectpicker")
-                    .html(selectstr)
-                    .selectpicker('refresh');
+             
+            
+        });
 
 
+        //main function of the program
+        async function mainfunction() {
 
-                $("select.jobs").change(function () {
-                    var selectedJobs = new Array();
-                    $("option:selected").each(function () {
-                        selectedJobs.push($(this).val());
-                    });
-                    selectstr = selectedJobs.toString();
-
-                    $('#btnGet').prop('disabled', false);
-                    if (selectstr.length == 0) {
-                        $('#btnGet').prop('disabled', true);
-                    }
-                    $("#clear_addon").on("click", function () {
-                        $(".selectpicker").prop('selectedIndex', -1)
-                        $('.selectpicker').selectpicker('refresh');
-                        selectstr = [];
-                        $('#btnGet').prop('disabled', true);
+            ServerData = $("#customInput").data("value");
+            drawTable(ServerData)
+            console.log(ServerData)
+           
+        }
 
 
+        //doing the ajax
+        async function doAjax(input) {
+            console.log(input)
 
-                    })
-                });
-
-                $('select').selectpicker();
-                $('.selectpicker').selectpicker('refresh');
-
-                //on click the search button it does ajax and calls draw table
-                $("#btnGet").click(function () {
-                    $.ajax({
-                        async: "true",
-                        type: "POST",
-                        url: "/Home/RcvJobs",
-                        data: JSON.stringify({ jb: selectstr }),
-                        contentType: "application/json; charset=utf-8",
-                        dataType: "json",
-                        success: function (response) {
-
-                            RcvedJobs = response
-                            drawTable(RcvedJobs);
-                            console.log("data we need ", RcvedJobs)
-                            console.log("data we have ", ServerData)
-                        },
-                        failure: function (response) {
-                            alert(response.responseText);
-                        },
-                        error: function (response) {
-                            alert(response.responseText);
-                        }
-                    });
-                });
-
-                //initialize tabel here on ready
-                var table = $('#GlazingReport').DataTable({
-                    //"data": input,
-                    select: "single",
-                    "searching": false,
-                    "paging": false,
-                    "columns": [
-                        {
-                            "className": 'details-control',
-                            "orderable": false,
-                            "data": null,
-                            "defaultContent": '',
-                        },
-                        { "data": "job" },
+            $.ajax({
+                async: "true",
+                type: "POST",
+                url: "/Home/RcvJobs",
+                data: JSON.stringify({ jobquery: input }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    console.log("ajax responded! ")
+                    //ServerData = response
+                    //setTimeout(() => { drawTable(ServerData) }, 1200)
 
 
-                    ],
-                    "order": [[1, 'asc']]
-                });
-
-
-                //click on data tabel row
-                $('#GlazingReport tbody').on('click', 'td.details-control', function () {
-                    var tr = $(this).closest('tr');
-                    var tdi = tr.find("i.fa");
-                    var row = table.row(tr);
-
-                    //prepReturnArr(tr[0].innerHTML.substring(56, 59), prepedReturnArr)
-
-                    if (row.child.isShown()) {
-                        // This row is already open - close it
-                        row.child.hide();
-                        tr.removeClass('shown');
-                        tdi.first().removeClass('fa-minus-square');
-                        tdi.first().addClass('fa-plus-square');
-                    }
-                    else {
-                        // Open this row
-                        row.child(format(row.data())).show();
-                        tr.addClass('shown');
-                        tdi.first().removeClass('fa-plus-square');
-                        tdi.first().addClass('fa-minus-square');
-                    }
-                });
-
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
             });
 
-            //inside the RcvedJobs we have job floor and tags but for showing them to user we have to group them just by job  ==> not floor not tag
-            function getUniqDataForJob(input) {
-                var input_ = JSON.parse(JSON.stringify(input))
-                var output = [];
+            //try {
+            //    result = await $.ajax({
+            //        type: "POST",
+            //        url: "/Home/RcvJobs",
+            //        data: JSON.stringify({ jobquery: input }),
+            //        contentType: "application/json; charset=utf-8",
+            //        dataType: "json"
+            //    })
 
-                input_.forEach(elm => {
-                    var flag = true;
-                    output.forEach(elm2 => {
-                        if (elm.job == elm2.job) {
-                            flag = false;
-                        }
-                    })
+            //    return result;
+            //} catch (error) {
+            //    console.log(error);
+            //}
+        }
 
-                    if (flag) {
-                        output.push(elm);
+        //inside the RcvedJobs we have job floor and tags but for showing them to user we have to group them just by job  ==> not floor not tag
+        function getUniqDataForJob(input) {
+            var input_ = input;
+            var input_ = JSON.parse(JSON.stringify(ServerData))
+            var output = [];
+
+            input_.forEach(elm => {
+                var flag = true;
+                output.forEach(elm2 => {
+                    if (elm.job == elm2.job) {
+                        flag = false;
                     }
                 })
-                return output;
-            }
+                if (flag) {
+                    output.push(elm);
+                }
+            })
+            return output;
+        }
 
-            function getUniqDataForAllJobFloor(input) {
+        function getUniqDataForAllJobFloor(input) {
+            var input_ = input
+            var input_ = JSON.parse(JSON.stringify(input))
+            var output = [];
 
-                var input_ = JSON.parse(JSON.stringify(input))
-                var output = [];
-
-                input_.forEach(elm => {
-                    var flag = true;
-                    output.forEach(elm2 => {
-                        if (elm.job == elm2.job && elm.floor == elm2.floor) {
-                            flag = false;
-                        }
-                    })
-                    if (flag) {
-                        output.push({job: elm.job, floor: elm.floor, checked: ""});
+            input_.forEach(elm => {
+                var flag = true;
+                output.forEach(elm2 => {
+                    if (elm.job == elm2.job && elm.floor == elm2.floor) {
+                        flag = false;
                     }
                 })
-                return output;
+                if (flag) {
+                    output.push({job: elm.job, floor: elm.floor, checked: ""});
+                }
+            })
+            return output;
+        }
+
+
+        function drawTable(input) {
+
+            prepedReturnArr = getUniqDataForAllJobFloor(input)           
+            //console.log(prepedReturnArr)
+
+            $('#GlazingReport').DataTable({
+                "destroy": true,
+                select: "single",
+                "searching": false,
+                "paging": false,
+                "columns": [
+                    {
+                        "className": 'details-control',
+                        "orderable": false,
+                        "data": null,
+                        "defaultContent": '',
+                    },
+                    { "data": "job" },
+                ],
+                "order": [[1, 'asc']]
+            });
+            $('#GlazingReport').DataTable().draw();
+
+            //click on data tabel row
+            $('#GlazingReport tbody').on('click', 'td.details-control', function () {
+                var tr = $(this).closest('tr');
+                var tdi = tr.find("i.fa");
+                var row = $('#GlazingReport').DataTable().row(tr);
+
+                console.log(row)
+
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                    tr.removeClass('shown');
+                    tdi.first().removeClass('fa-minus-square');
+                    tdi.first().addClass('fa-plus-square');
+                }
+                else {
+                    // Open this row
+                    row.child(format(row.data())).show();
+                    tr.addClass('shown');
+                    tdi.first().removeClass('fa-plus-square');
+                    tdi.first().addClass('fa-minus-square');
+                }
+            });
+
+            $('#GlazingReport').DataTable().clear();
+            $('#GlazingReport').DataTable().rows.add(getUniqDataForJob(input)).draw();
+
+        }
+
+        //click on green plus on each rows in tabel trigers this function
+        function format(d) {
+            var Internall = [];     
+
+             //`d` is the original data object for the row
+            var temp = '<table style="padding: 0.5%; border: 1px solid #ccc;   border-radius: 3px;margin-left: 1%;margin-right: 1%;"><thead><tr><th>FLOORS</th><th><input onclick="selectall(this)" value="' + d.job + '"   type="checkbox"> select all</th></tr></thead> <tbody>	';
+
+            prepedReturnArr.forEach(elm => {
+                if (elm.job == d.job) {
+                    temp = temp + '<tr><td>' + elm.floor + '</td><td class="c"><input onclick="selectsingle(this)"  class="' + elm.job + ' " value='+JSON.stringify(elm)+' type="checkbox" ' + elm.checked + '></td></tr>'
+                }
+            })
+            temp = temp + ' </tbody></table>'
+       
+            return temp
+        }
+
+        //select or deselect all floors for one job
+        function selectall(input) {
+
+            for (item of document.getElementsByClassName(input.value)) {
+                if (input.checked == true) {
+                    item.checked = true;
+                }
+                if (input.checked == false) {
+                    item.checked = false;
+                }
             }
 
 
-            function drawTable(input) {
-                prepedReturnArr = getUniqDataForAllJobFloor(input)
-                $('#GlazingReport').DataTable().clear();
-                $('#GlazingReport').DataTable().rows.add(getUniqDataForJob(input)).draw();
-            }
+            prepedReturnArr.forEach(elm => {
 
-            //click on green plus on each rows in tabel trigers this function
-            function format(d) {
-                //var Internall = [];
-                //console.log("data in RcvedJobs", RcvedJobs)
-                //console.log("before", prepedReturnArr)
+                if (elm.job == input.value) {
 
-                // `d` is the original data object for the row
-                var temp = '<table style="padding: 0.5%; border: 1px solid #ccc;   border-radius: 3px;margin-left: 1%;margin-right: 1%;"><thead><tr><th>FLOORS</th><th><input onclick="selectall(this)" value="' + d.job + '"   type="checkbox"> select all</th></tr></thead> <tbody>	';
-
-                prepedReturnArr.forEach(elm => {
-                    if (elm.job == d.job) {
-                        temp = temp + '<tr><td>' + elm.floor + '</td><td class="c"><input onclick="selectsingle(this)"  class="' + elm.job + ' " value='+JSON.stringify(elm)+' type="checkbox" ' + elm.checked + '></td></tr>'
-                    }
-                })
-                temp = temp + ' </tbody></table>'
-                //console.log("after", prepedReturnArr)
-                return temp
-            }
-
-            function serach() {
-
-            }
-            //select or deselect all floors for one job
-            function selectall(input) {
-                
-                for (item of document.getElementsByClassName(input.value)) {
                     if (input.checked == true) {
-                        item.checked = true;
+                        elm.checked = "checked";
                     }
                     if (input.checked == false) {
-                        item.checked = false;
+                        elm.checked = "";
                     }
                 }
-                
-                
-                prepedReturnArr.forEach(elm => {
-                    
-                    if (elm.job == input.value) {
-                        
-                        if (input.checked == true) {
-                            elm.checked = "checked";
-                        }
-                        if (input.checked == false) {
-                            elm.checked = "";
-                        }
+            })
+            console.log(prepedReturnArr)
+        }
+        //if user clicks on every single floor it loops throw prepedReturnArr and changes the status of the checked property
+        function selectsingle(input) {
+
+            var temp = JSON.parse(input.value);
+
+            prepedReturnArr.forEach(elm => {
+                if (elm.job == temp.job && elm.floor == temp.floor) {
+                    if (input.checked == false) {
+                        elm.checked = "";
+                    }
+                    if (input.checked == true) {
+                        elm.checked = "checked"
+                    }
+                }
+            })
+            console.log(prepedReturnArr)
+        }
+
+        //to prepare and send the data to bach end
+        async function search() {
+            var input_ = JSON.parse(JSON.stringify(prepedReturnArr))
+            var out = [];
+             input_=input_.filter(elm => { return elm.checked != "" });
+             input_.forEach(elm => {
+
+                ServerData.forEach(elm2 => {
+                    if (elm.job == elm2.job && elm.floor == elm2.floor) {
+                        out.push(elm2);
                     }
                 })
-                console.log(prepedReturnArr)
-            }
-            //if user clicks on every single floor it loops throw prepedReturnArr and changes the status of the checked property
-            function selectsingle(input) {
-
-                var temp = JSON.parse(input.value);
-
-                prepedReturnArr.forEach(elm => {
-                    if (elm.job == temp.job && elm.floor == temp.floor) {
-                        if (input.checked == false) {
-                            elm.checked = "";
-                        }
-                        if (input.checked == true) {
-                            elm.checked = "checked"
-                        }
-                    }
-                })
-                console.log(prepedReturnArr)
-            }
-
-           
+             })
+           var test = doAjax(JSON.stringify(out))
+            
+        }
 
     </script>
 
@@ -281,10 +276,8 @@
 </head>
 <body>
 
-    <select id="ddlJobs" class="selectpicker jobs " data-live-search="true" multiple>
-    </select>
-    <button class="btn btn-danger btn-sm" id="clear_addon">X</button>
-    <button class="btn btn-danger" id="btnGet" disabled>SEARCH</button>
+
+
     <label class="checkbox-inline">
         <input id="Line1" type="checkbox" style="color:black; font:Arial" value="1111" checked>Swing Door
     </label>
@@ -310,7 +303,7 @@
             <thead>
                 <tr style="background-color: #CCCCCC;border: solid 1px #555555;">
                     <th></th>
-                    <th>JOB</th>
+                    <th>job</th>
 
                 </tr>
             </thead>
@@ -319,8 +312,8 @@
         </table>
     </div>
 
-    <button onclick="serach()">Search</button>
-    <input type="hidden" id="customInput" data-value="@ViewBag.json" />
+    <button onclick="search()">Search</button>
+    <input type="hidden" id="customInput" data-value="@JsonConvert.SerializeObject(Model)" />
 </body>
 
 </html>

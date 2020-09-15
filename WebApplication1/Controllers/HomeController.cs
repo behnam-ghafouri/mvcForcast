@@ -7,6 +7,7 @@ using System.Data.OleDb;
 using System.Data;
 using System.Web.Script.Serialization;
 using WebApplication1.Models;
+using System.Web.Optimization;
 
 
 /*this part fetches all the styles they have doors in them*/
@@ -43,16 +44,14 @@ using WebApplication1.Models;
 namespace WebApplication1.Controllers
 {
    
-
         public class HomeController : Controller
         {
 
             public ActionResult Index()
             {
+            
 
-                ViewBag.json = JobTable.getAllJobTables();
-
-                return View();
+                return View(JobTable.getAllJobTables());
             }
 
             [HttpPost]
@@ -71,38 +70,27 @@ namespace WebApplication1.Controllers
             }
 
 
-            //[HttpPost]
-            //public ActionResult RcvJobs(string jb)
-            //{
-            //    List<Job> listOfJobsForReturn = new List<Job>();
-            //    try
-            //    {              
+        [HttpPost]
+        public ActionResult RcvJobs(string jobquery)
+        {
+            try
+            {
+                //var json_serializer = new JavaScriptSerializer();
+                //Job routes_list = json_serializer.Deserialize<Job>(jobquery);
+                var test = jobquery;
 
 
-            //        string temp = jb;
-            //        string[] jobs = temp.Split(',');
-
-            //    foreach (string job in jobs)
-            //    {
-            //        Job jobss = new Job();
-
-            //        List<Job> tempjobs = jobss.getJobsExcludedFromGlazing(job);
-
-            //        listOfJobsForReturn.AddRange(tempjobs);
-
-            //    }        
-
-                
-
-            //    return Json(listOfJobsForReturn);
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        throw ex;
-            //    }
-            //}
-
-
+                var trr = Json(JobTable.getAllJobTables());
+                 
+                return trr;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
+
+
+    }
 
 }

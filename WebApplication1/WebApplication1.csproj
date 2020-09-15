@@ -124,9 +124,11 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\Glazing.cs" />
+    <Compile Include="Models\Conection.cs" />
     <Compile Include="Models\Job.cs" />
+    <Compile Include="Models\Jobestimate.cs" />
     <Compile Include="Models\JobTable.cs" />
+    <Compile Include="Models\Style.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

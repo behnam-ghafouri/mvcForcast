@@ -13,6 +13,8 @@ namespace WebApplication1.Models
         {
             string str_SQL = "SELECT name FROM styles where '" + stylename + "' IN (O1,O2,O3,O4,O5,O6,O7,O8)";
             OleDbConnection connection = new OleDbConnection(Conection.getConectionString());
+            List<Jobestimate> jobestimates = new List<Jobestimate>();
+
             try
             {
                 connection.Open();
@@ -30,7 +32,7 @@ namespace WebApplication1.Models
             {
                 connection.Close();
             }
-            return "test";
+            return jobestimates;
         }
     }
 }

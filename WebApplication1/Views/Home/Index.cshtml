@@ -11,8 +11,14 @@
 
 <html>
 <head>
+    @Styles.Render("~/Content/Site.css")
+    @Styles.Render("~/Content/loading.css")
+    @Styles.Render("~/Content/hover.css")
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+
+    @Styles.Render("~/Styles/Home.css")
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
@@ -29,12 +35,13 @@
         var prepedReturnArr = [];
 
         $(document).ready(function () {
+            $("#LoadingImage").hide();
             mainfunction()
-         
-            //$('#GlazingReport').DataTable().destroy();          
 
-             
-            
+            //$('#GlazingReport').DataTable().destroy();
+
+
+
         });
 
 
@@ -44,12 +51,13 @@
             ServerData = $("#customInput").data("value");
             drawTable(ServerData)
             console.log(ServerData)
-           
+
         }
 
 
         //doing the ajax
         async function doAjax(input) {
+            $("#LoadingImage").show();
             console.log(input)
 
             $.ajax({
@@ -59,7 +67,10 @@
                 data: JSON.stringify({ jobquery: input }),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
+           
                 success: function (response) {
+                    $("#LoadingImage").hide();
+
                     console.log("ajax responded! ")
                     //ServerData = response
                     //setTimeout(() => { drawTable(ServerData) }, 1200)
@@ -122,7 +133,7 @@
                     }
                 })
                 if (flag) {
-                    output.push({job: elm.job, floor: elm.floor, checked: ""});
+                    output.push({ job: elm.job, floor: elm.floor, checked: "" });
                 }
             })
             return output;
@@ -131,7 +142,7 @@
 
         function drawTable(input) {
 
-            prepedReturnArr = getUniqDataForAllJobFloor(input)           
+            prepedReturnArr = getUniqDataForAllJobFloor(input)
             //console.log(prepedReturnArr)
 
             $('#GlazingReport').DataTable({
@@ -139,6 +150,8 @@
                 select: "single",
                 "searching": false,
                 "paging": false,
+                "scrollY": "645px",
+                "scrollCollapse": true,
                 "columns": [
                     {
                         "className": 'details-control',
@@ -147,6 +160,9 @@
                         "defaultContent": '',
                     },
                     { "data": "job" },
+                ],
+                "columnDefs": [
+                    { width: 100, targets: 0 }
                 ],
                 "order": [[1, 'asc']]
             });
@@ -183,18 +199,18 @@
 
         //click on green plus on each rows in tabel trigers this function
         function format(d) {
-            var Internall = [];     
+            var Internall = [];
 
-             //`d` is the original data object for the row
-            var temp = '<table style="padding: 0.5%; border: 1px solid #ccc;   border-radius: 3px;margin-left: 1%;margin-right: 1%;"><thead><tr><th>FLOORS</th><th><input onclick="selectall(this)" value="' + d.job + '"   type="checkbox"> select all</th></tr></thead> <tbody>	';
-
+            //`d` is the original data object for the row
+            // var temp = '<table style="border: 2px solid lightgray;" class="table table-hover nowrap" ><thead class="table-info" style="text-align: center;"><tr><th>Floors</th><th><input onclick="selectall(this)"  class="checkbox" value="' + d.job + '" type="checkbox">Select all</th></tr></thead> <tbody>	';
+            var temp = '<table style="border: 2px solid lightgray;" class="table table-hover nowrap innerTable" ><thead class="table-info" style="text-align: center;"><tr><th>Floors</th><th><div class="custom-control custom-checkbox custom-control-inline"><input onclick="selectall(this)"  value="' + d.job + '" type="checkbox" class="custom-control-input" id="customCheck1"><label class="custom-control-label" for="customCheck1">Select all</label></div></th></tr></thead> <tbody>';
             prepedReturnArr.forEach(elm => {
                 if (elm.job == d.job) {
-                    temp = temp + '<tr><td>' + elm.floor + '</td><td class="c"><input onclick="selectsingle(this)"  class="' + elm.job + ' " value='+JSON.stringify(elm)+' type="checkbox" ' + elm.checked + '></td></tr>'
+                    temp = temp + '<tr><td style="text-align: center;" >' + elm.floor + '</td><td class="c " style="text-align: center;"><input onclick="selectsingle(this)"  class="' + elm.job + ' singleCheck" value=' + JSON.stringify(elm) + ' type="checkbox" ' + elm.checked + '></td></tr>'
                 }
             })
             temp = temp + ' </tbody></table>'
-       
+
             return temp
         }
 
@@ -247,73 +263,207 @@
         async function search() {
             var input_ = JSON.parse(JSON.stringify(prepedReturnArr))
             var out = [];
-             input_=input_.filter(elm => { return elm.checked != "" });
-             input_.forEach(elm => {
+            input_ = input_.filter(elm => { return elm.checked != "" });
+            input_.forEach(elm => {
 
                 ServerData.forEach(elm2 => {
                     if (elm.job == elm2.job && elm.floor == elm2.floor) {
                         out.push(elm2);
                     }
+             
                 })
-             })
-           var test = doAjax(JSON.stringify(out))
-            
+            })
+            var test = doAjax(JSON.stringify(out))
+
+
         }
 
     </script>
 
     <style>
-        td.details-control {
-            background: url('https://datatables.net/examples/resources/details_open.png') no-repeat center center;
-            cursor: pointer;
+        body {
+            font-family: Raleway;
         }
 
-        tr.shown td.details-control {
-            background: url('https://datatables.net/examples/resources/details_close.png') no-repeat center center;
+        label {
+            font-weight: 10 !important;
+            font-size: 16px;
+            text-transform: none;
+            font-family: Raleway;
+            margin-bottom: 0rem;
+            letter-spacing: 0px;
+        }
+
+
+        .btn-outline-info:hover {
+            background-color: transparent;
+            color: #000;
+            border-color: #15a9df;
+        }
+
+        .btn-outline-info {
+            color: #000;
+            background-color: #15a9df;
+            border-color: #15a9df;
+        }
+
+        .table-info,
+        .table-info > td,
+        .table-info > th {
+            background-color: #15a9df;
+        }
+
+        .toolbar {
+            padding: 20px;
+            border: solid 2px lightgray;
+            border-radius: 25px;
+        }
+
+
+
+
+        span {
+            font-weight: 10 !important;
+            font-family: Raleway;
+        }
+
+        .input-group > .form-control:focus {
+            outline: none !important;
+            border-color: #15a9df;
+            box-shadow: 0 0 10px #15a9df;
+        }
+
+        h2,
+        th {
+            text-transform: none;
+            font-family: Raleway;
+        }
+
+        .custom-control-input:checked ~ .custom-control-label::before {
+            background-color: #15a9df;
+        }
+
+
+        /*
+        td.details-control {
+           background: url('https://datatables.net/examples/resources/details_open.png') no-repeat center center;
+
+            cursor: pointer;
+        }*/
+
+
+
+        td.details-control:after {
+            content: "\f055"; /* this is your text. You can also use UTF-8 character codes as I do here */
+            font-family: FontAwesome;
+            padding-left: 10px !important;
+            vertical-align: middle;
+            color: green;
+        }
+
+        tr.shown td.details-control:after {
+            /*background: url('https://datatables.net/examples/resources/details_close.png') no-repeat center center;*/
+            content: "\f056"; /* this is your text. You can also use UTF-8 character codes as I do here */
+            font-family: FontAwesome;
+            padding-left: 10px !important;
+            vertical-align: middle;
+            cursor: pointer;
+            color: red;
+        }
+
+        th, td {
+            white-space: nowrap;
+        }
+
+        div.dataTables_wrapper {
+            margin: 0 auto;
+        }
+
+        .checkbox {
+            margin: 5px;
+        }
+
+        .innerTable {
+            width: 50%;
+            padding-right: 15px;
+            padding-left: 15px;
         }
     </style>
 
 </head>
 <body>
-
-
-
-    <label class="checkbox-inline">
-        <input id="Line1" type="checkbox" style="color:black; font:Arial" value="1111" checked>Swing Door
-    </label>
-    <label class="checkbox-inline">
-        <input id="Line1" type="checkbox" style="color:black; font:Arial" value="1111" checked>Awning
-    </label>
-    <label class="checkbox-inline">
-        <input id="Line1" type="checkbox" style="color:black; font:Arial" value="1111" checked>Shift
-    </label>
-    <label class="checkbox-inline">
-        <input id="Line1" type="checkbox" style="color:black; font:Arial" value="1111" checked>R3
-    </label>
-    <label class="checkbox-inline">
-        <input id="Line1" type="checkbox" style="color:black; font:Arial" value="1111" checked>Spandrel
-    </label>
-    <label class="checkbox-inline">
-        <input id="Line1" type="checkbox" style="color:black; font:Arial" value="1111" checked>Shadowbox
-    </label>
-
+    <div class="header-banner-small"></div>
     <div>
+        <nav class="navbar navbar-expand-sm">
+            <a class="navbar-brand">
+                <img src="~/Content/images/full-logo.png" class="App-logo"
+                     alt="logo" height="40" width="147">
+            </a>
+            <ul class="navbar-nav">
+                <li class="nav-item">
 
-        <table id="GlazingReport" class="cell-border compact stripe">
-            <thead>
-                <tr style="background-color: #CCCCCC;border: solid 1px #555555;">
-                    <th></th>
-                    <th>job</th>
-
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+                </li>
+            </ul>
+        </nav>
     </div>
 
-    <button onclick="search()">Search</button>
-    <input type="hidden" id="customInput" data-value="@JsonConvert.SerializeObject(Model)" />
+
+
+
+    <div id="pageHeader" class="container"><h2 runat="server">Forecast Status</h2></div>
+    <div class="container toolbar">
+        <div class="custom-control custom-checkbox custom-control-inline">
+            <input type="checkbox" class="custom-control-input" id="awning">
+            <label class="custom-control-label" for="awning">Awning</label>
+        </div>
+        <div class="custom-control custom-checkbox custom-control-inline">
+            <input type="checkbox" class="custom-control-input" id="door">
+            <label class="custom-control-label" for="door">Door</label>
+        </div>
+        <div class="custom-control custom-checkbox custom-control-inline">
+            <input type="checkbox" class="custom-control-input" id="shift">
+            <label class="custom-control-label" for="shift">Shift</label>
+        </div>
+        <div class="custom-control custom-checkbox custom-control-inline">
+            <input type="checkbox" class="custom-control-input" id="r3">
+            <label class="custom-control-label" for="r3">R3</label>
+        </div>
+        <div class="custom-control custom-checkbox custom-control-inline">
+            <input type="checkbox" class="custom-control-input" id="spandrel">
+            <label class="custom-control-label" for="spandrel">Spandrel</label>
+        </div>
+        <div class="custom-control custom-checkbox custom-control-inline">
+            <input type="checkbox" class="custom-control-input" id="shadowbox">
+            <label class="custom-control-label" for="shadowbox">Shadowbox</label>
+        </div>
+
+        <button class="btn btn-sm btn-outline-info pull-right" onclick="search()"><i class="fa fa-search"></i>&nbsp;Search</button>
+    </div>
+    <!--Loading Image-->
+    <div id="LoadingImage" class="text-center">
+        <div class="d-flex justify-content-center">
+            <img class="loading ld ld-surprise" style="width:5%" src="~/Content/images/logo.jpg" />
+        </div>
+    </div>
+    <!--END Loading Image-->
+    <div class="container">
+
+        <div style="padding:20px">
+            <table id="GlazingReport" class="table table-hover table-bordered " style="border: solid 2px lightgray;text-align: center; ">
+                <thead class="table-info" style="text-align: center;">
+                    <tr>
+                        <th class="selectall">#</th>
+                        <th>Job</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+        <input type="hidden" id="customInput" data-value="@JsonConvert.SerializeObject(Model)" />
+    </div>
+
 </body>
 
 </html>

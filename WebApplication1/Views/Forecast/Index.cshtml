@@ -38,13 +38,11 @@
             $("#LoadingImage").hide();
             mainfunction()
 
-            //$('#GlazingReport').DataTable().destroy();
-
 
 
         });
 
-
+    
         //main function of the program
         async function mainfunction() {
 
@@ -189,6 +187,10 @@
                     tr.addClass('shown');
                     tdi.first().removeClass('fa-plus-square');
                     tdi.first().addClass('fa-minus-square');
+                    if ($('.checkbox:checked').length == $('.checkbox').length) {
+                        $("#select_all").prop('checked', true);
+                    }
+
                 }
             });
 
@@ -202,17 +204,19 @@
             var Internall = [];
 
             //`d` is the original data object for the row
-            // var temp = '<table style="border: 2px solid lightgray;" class="table table-hover nowrap" ><thead class="table-info" style="text-align: center;"><tr><th>Floors</th><th><input onclick="selectall(this)"  class="checkbox" value="' + d.job + '" type="checkbox">Select all</th></tr></thead> <tbody>	';
-            var temp = '<table style="border: 2px solid lightgray;" class="table table-hover nowrap innerTable" ><thead class="table-info" style="text-align: center;"><tr><th>Floors</th><th><div class="custom-control custom-checkbox custom-control-inline"><input onclick="selectall(this)"  value="' + d.job + '" type="checkbox" class="custom-control-input" id="customCheck1"><label class="custom-control-label" for="customCheck1">Select all</label></div></th></tr></thead> <tbody>';
+            //var temp = '<table style="border: 2px solid lightgray;" class="table table-hover nowrap innerTable" ><thead class="table-info" style="text-align: center;"><tr><th>Floors</th><th><input onclick="selectall(this)"  value="' + d.job + '" type="checkbox" >Select all</th></tr></thead> <tbody>';
+            var temp = '<table  style="border: 2px solid lightgray;" class="table table-info table-hover nowrap innerTable"><thead class="table-info" style="text-align: center;"><tr><th>Floors</th><th><input id="select_all" onclick="selectall(this)" value="' + d.job + '"   type="checkbox" > Select all</th></tr></thead> <tbody>	';
             prepedReturnArr.forEach(elm => {
                 if (elm.job == d.job) {
-                    temp = temp + '<tr><td style="text-align: center;" >' + elm.floor + '</td><td class="c " style="text-align: center;"><input onclick="selectsingle(this)"  class="' + elm.job + ' singleCheck" value=' + JSON.stringify(elm) + ' type="checkbox" ' + elm.checked + '></td></tr>'
+                    temp = temp + '<tr><td style="text-align: center;" >' + elm.floor + '</td><td class="c"  style="text-align: center;"><input onclick="selectsingle(this)"  class="' + elm.job + ' checkbox" value=' + JSON.stringify(elm) + ' type="checkbox" ' + elm.checked + '></td></tr>'
                 }
             })
             temp = temp + ' </tbody></table>'
 
             return temp
         }
+
+
 
         //select or deselect all floors for one job
         function selectall(input) {
@@ -224,8 +228,8 @@
                 if (input.checked == false) {
                     item.checked = false;
                 }
+         
             }
-
 
             prepedReturnArr.forEach(elm => {
 
@@ -245,7 +249,14 @@
         function selectsingle(input) {
 
             var temp = JSON.parse(input.value);
-
+         
+            //check "select all" if all checkbox items are checked
+            if ($('.checkbox:checked').length == $('.checkbox').length) {
+                $("#select_all").prop('checked', true);
+            }
+            else {
+                $("#select_all").prop('checked', false);
+            }
             prepedReturnArr.forEach(elm => {
                 if (elm.job == temp.job && elm.floor == temp.floor) {
                     if (input.checked == false) {
@@ -253,7 +264,10 @@
                     }
                     if (input.checked == true) {
                         elm.checked = "checked"
+                   
                     }
+                
+                   
                 }
             })
             console.log(prepedReturnArr)

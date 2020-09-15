@@ -49,7 +49,7 @@ namespace WebApplication1.Controllers
 
             public ActionResult Index()
             {
-              return View("AwningDoor",JobTable.getAllJobTables());            
+              return View(JobTable.getAllJobTables());            
             }
 
             [HttpPost]

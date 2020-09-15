@@ -298,8 +298,9 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Forecast\AwningDoor.cshtml" />
-    <Content Include="Views\Forecast\tt.cshtml" />
+    <Content Include="Views\Forecast\Index.cshtml" />
+    <Content Include="Views\Forecast\AwningAndDoor.cshtml" />
+    <Content Include="Views\Forecast\R3.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

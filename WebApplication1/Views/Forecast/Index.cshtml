@@ -60,8 +60,7 @@
         //main function of the program
         async function mainfunction() {
 
-            ServerData = $("#customInput").data("value");
-            
+            ServerData = $("#customInput").data("value");       
            
             var temp = [];
             ServerData.allofthejobtables_.forEach(elm => {
@@ -94,7 +93,7 @@
                 success: function (response) {
                     $("#LoadingImage").hide();
 
-                    console.log("ajax responded! ")
+                    console.log("ajax responded! ", response)
                     //ServerData = response
                     //setTimeout(() => { drawTable(ServerData) }, 1200)
 
@@ -456,8 +455,8 @@
 
 
 
-    <div id="pageHeader" class="container"><h2 runat="server">Forecast Status</h2></div>
-    <div class="container toolbar">
+    <div id="pageHeader" class="container"><h2 class = "heading">Forecast Status</h2></div>
+    @*<div class="container toolbar">
         <div class="custom-control custom-checkbox custom-control-inline">
             <input type="checkbox" class="custom-control-input" id="awning">
             <label class="custom-control-label" for="awning">Awning</label>
@@ -484,7 +483,7 @@
         </div>
 
         <button class="btn btn-sm btn-outline-info pull-right" onclick="search()"><i class="fa fa-search"></i>&nbsp;Search</button>
-    </div>
+    </div>*@
 
 
     <div class="container toolbar" style="display:flex;justify-content:space-around;">

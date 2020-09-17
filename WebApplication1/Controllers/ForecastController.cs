@@ -51,7 +51,6 @@ namespace WebApplication1.Controllers
             {
 
             Jobs gotofrontend = new Jobs();
-
             
             return View(gotofrontend);            
             }
@@ -83,7 +82,7 @@ namespace WebApplication1.Controllers
                                        
 
 
-                return Json(null);
+                return Json(forecast1);
                 
 
                 }

@@ -37,13 +37,25 @@
         $(document).ready(function () {
             $("#LoadingImage").hide();
             mainfunction()
-
+            toggle()
             //$('#GlazingReport').DataTable().destroy();
 
 
 
         });
 
+        function toggle() {
+            $('.btn-toggle').click(function () {
+                $(this).find('.btn').toggleClass('active');
+                if ($(this).find('.btn-outline-info').length > 0) {
+                    if ($(this).find('.btn').toggleClass('btn-outline-info'))
+                        $('.heading').text(function (i, v) {
+                            return v === 'Infill Forecast Report' ? 'Swing Door/ Awning Forecast Report' : 'Infill Forecast Report'
+                        })
+                }
+
+            });
+        }
 
         //main function of the program
         async function mainfunction() {
@@ -473,6 +485,19 @@
 
         <button class="btn btn-sm btn-outline-info pull-right" onclick="search()"><i class="fa fa-search"></i>&nbsp;Search</button>
     </div>
+
+
+    <div class="container toolbar" style="display:flex;justify-content:space-around;">
+        <div class="toggle-container toolbarButton">
+            <div class="btn-group btn-toggle">
+                <button class="btn btn-md  btn-outline-info active" id="awningDoor"> Awning & Door Forecast</button>
+                <button class="btn btn-md " id="infill">Infill Forecast</button>
+            </div>
+
+        </div>
+        <div class="searchButton"><button class="btn btn-md btn-outline-info pull-right" onclick="search()"><i class="fa fa-search"></i>&nbsp;Search</button></div>
+    </div>
+
     <!--Loading Image-->
     <div id="LoadingImage" class="text-center">
         <div class="d-flex justify-content-center">

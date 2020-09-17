@@ -124,12 +124,33 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\AwningAll.cs" />
+    <Compile Include="Models\AwningF92.cs" />
+    <Compile Include="Models\AwningM90.cs" />
+    <Compile Include="Models\Awningmetra.cs" />
+    <Compile Include="Models\Awningquest.cs" />
     <Compile Include="Models\Conection.cs" />
+    <Compile Include="Models\Flushpanel.cs" />
     <Compile Include="Models\Job.cs" />
+    <Compile Include="Models\JobDetail.cs" />
     <Compile Include="Models\Jobestimate.cs" />
+    <Compile Include="Models\JobFloor.cs" />
+    <Compile Include="Models\Jobs.cs" />
+    <Compile Include="Models\JobAndZ_Job.cs" />
     <Compile Include="Models\JobTable.cs" />
+    <Compile Include="Models\Projectpanel.cs" />
+    <Compile Include="Models\R3.cs" />
+    <Compile Include="Models\ShadowboxBV.cs" />
+    <Compile Include="Models\ShadowboxSB.cs" />
+    <Compile Include="Models\Shitf.cs" />
+    <Compile Include="Models\SpandrelSP.cs" />
+    <Compile Include="Models\SpandrelSV.cs" />
     <Compile Include="Models\Style.cs" />
     <Compile Include="Models\StyleDetail.cs" />
+    <Compile Include="Models\ReportData.cs" />
+    <Compile Include="Models\StylesForSendToFront1.cs" />
+    <Compile Include="Models\StylesForSendToFront2.cs" />
+    <Compile Include="Models\SwingDoor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -45,48 +45,46 @@ namespace WebApplication1.Controllers
 {
    
         public class ForecastController : Controller
-        {
-
+        {       
+            
             public ActionResult Index()
             {
-              return View(JobTable.getAllJobTables());            
+
+            Jobs gotofrontend = new Jobs();
+
+            
+            return View(gotofrontend);            
             }
 
             [HttpPost]
-            public ActionResult RcvJobs(string jobquery , string[] stylesWeLookFor,string reportname)
+            public ActionResult RcvJobs(string jobquery ,string[] stylesWeLookFor , string reportname)
             {
-                List<string> tempstylesWeLookFor = new List<string>();
-
-                tempstylesWeLookFor.Add("SW");
-                tempstylesWeLookFor.Add("AW");
 
                 try
                 {
-                    //convert the type to list of job
-                    var json_serializer = new JavaScriptSerializer();
-                    List<Job> jobFromFrontendForQuery = json_serializer.Deserialize<List<Job>>(jobquery);
+                //convert the type to list of job
+                var json_serializer = new JavaScriptSerializer();
+                Jobs jobFromFrontendForQuery = json_serializer.Deserialize<Jobs>(jobquery);
+                var test = 0;
+                //we are going to store required data for every job 
+                List<JobAndZ_Job> jobsWithR3AndAwningData = new List<JobAndZ_Job>();
+                foreach(Job RcvJob in jobFromFrontendForQuery.allofthejobtables_)
+                {
+                    jobsWithR3AndAwningData.Add(new JobAndZ_Job(RcvJob.jobname_,RcvJob.jobdetail_));
+                }
 
 
-                    //taking all of the R3 and awning property from z_jobs
-                    Job preparedobjectofrecvjobs = new Job(jobFromFrontendForQuery);
+                //send the jobsWithR3AndAwningData to StylesForsendToFront1
+                StylesForSendToFront1 forecast1 = new StylesForSendToFront1(jobsWithR3AndAwningData, stylesWeLookFor);
 
 
-                    //reads and calculets all the types from style table 
-                    Style styleObject = new Style();
+                //send the jobsWithR3AndAwningData to StylesForsendToFront2
+                StylesForSendToFront2 forecast2 = new StylesForSendToFront2(jobsWithR3AndAwningData, stylesWeLookFor);
+                                       
 
-              
 
-                    foreach(StyleDetail elm in styleObject.styletable_)
-                    {
-                        if( elm.name_ == "8023" || elm.name_ == "8015" || elm.name_ == "8007" || elm.name_ == "8000")
-                        {
-                            var ffffff = 0;
-                        }
-                    }
-               
-
-                    var trr = Json(JobTable.getAllJobTables());
-                    return RedirectToAction("/tt");
+                return Json(null);
+                
 
                 }
                 catch (Exception ex)

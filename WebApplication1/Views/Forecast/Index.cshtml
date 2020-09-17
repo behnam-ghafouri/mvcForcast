@@ -1,7 +1,7 @@
 ﻿
 @using WebApplication1.Models
 @using System.Collections.Generic
-@model List<Job>
+@model  Jobs
 @using System.Web.Script.Serialization
 @using Newtonsoft.Json.Linq
 @using Newtonsoft.Json
@@ -49,22 +49,33 @@
         async function mainfunction() {
 
             ServerData = $("#customInput").data("value");
+            
+           
+            var temp = [];
+            ServerData.allofthejobtables_.forEach(elm => {
+               
+                elm.jobdetail_.forEach(elm2 => {
+                    
+                    temp.push({job:elm.jobname_,floor:elm2.floor,tag:elm2.tag,style:elm2.style})
+                    
+                })
+            })
+            ServerData = temp;
             drawTable(ServerData)
-            console.log(ServerData)
-
+            
         }
 
 
         //doing the ajax
         async function doAjax(input) {
             $("#LoadingImage").show();
-            console.log(input)
+            console.log("sending ajax",input)
 
             $.ajax({
                 async: "true",
                 type: "POST",
                 url: "/Forecast/RcvJobs",
-                data: JSON.stringify({ jobquery: input, stylesWeLookFor: "this", reportname: "and this " }),
+                data: JSON.stringify({ jobquery: input , stylesWeLookFor: "this", reportname: "and this " }),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
            
@@ -85,19 +96,7 @@
                 }
             });
 
-            //try {
-            //    result = await $.ajax({
-            //        type: "POST",
-            //        url: "/Home/RcvJobs",
-            //        data: JSON.stringify({ jobquery: input }),
-            //        contentType: "application/json; charset=utf-8",
-            //        dataType: "json"
-            //    })
-
-            //    return result;
-            //} catch (error) {
-            //    console.log(error);
-            //}
+           
         }
 
         //inside the RcvedJobs we have job floor and tags but for showing them to user we have to group them just by job  ==> not floor not tag
@@ -264,6 +263,8 @@
             var input_ = JSON.parse(JSON.stringify(prepedReturnArr))
             var out = [];
             input_ = input_.filter(elm => { return elm.checked != "" });
+                        
+                      
             input_.forEach(elm => {
 
                 ServerData.forEach(elm2 => {
@@ -273,8 +274,41 @@
              
                 })
             })
-            var test = doAjax(JSON.stringify(out))
 
+            //prepare model to send back
+            var out2=[]
+            //add unique jobs in array
+            out.forEach(elm => {
+                var flag = true
+
+                out2.forEach(elm2 => {
+                    if (elm.job == elm2.job) {
+                        flag = false; 
+                    }                     
+                })
+
+                if (flag) {
+                    out2.push({ job: elm.job})
+                }
+            })
+
+            //saving detail in model for every job
+            var out3 = []
+            out2.forEach(elm => {
+                var detail = []
+                out.forEach(elm2 => {
+                    if (elm.job == elm2.job) {
+                        detail.push({ floor: elm2.floor, tag: elm2.tag, style: elm2.style,checked:"" })
+                        
+                    }
+                })
+                out3.push({ jobname_: elm.job, jobdetail_: detail })
+            })
+            
+            var out4 = { allofthejobtables_:out3}
+            //var test = doAjax(JSON.stringify(out3))
+           // console.log(JSON.stringify(out4))
+            var test = doAjax(JSON.stringify(out4))
 
         }
 

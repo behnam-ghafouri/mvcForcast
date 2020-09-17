@@ -8,9 +8,7 @@ namespace WebApplication1.Models
 {
     public class Style
     {
-        public List<StyleDetail> styletable_ { get; set; }
-
-       
+        public List<StyleDetail> styletable_ { get; set; }       
 
         public Style() {
 
@@ -29,14 +27,15 @@ namespace WebApplication1.Models
                     {                        
                         StyleDetail temp = new StyleDetail();
                         temp.name_ = reader["name"].ToString();
-                        temp.swingdoor_ = stylecounter(reader, "SW").ToString();
-                        //temp.awningF92_
-                        temp.shift_ = (stylecounter(reader, "HP") + stylecounter(reader, "HV") + stylecounter(reader, "HL") + stylecounter(reader, "HF") + stylecounter(reader, "HS")).ToString();
-                        temp.spandrolSP_ = stylecounter(reader, "SP").ToString();
-                        temp.spandrolSV_ = stylecounter(reader, "SV").ToString();
-                        temp.shadowboxBV_ = stylecounter(reader, "BV").ToString();
-                        temp.shadowboxSB_ = stylecounter(reader, "SB").ToString();
-                        temp.projectpanel_ = stylecounter(reader, "FP").ToString();
+                        temp.swingdoor_ = stylecounter(reader, "SW");
+                        temp.awning_= stylecounter(reader, "OV");
+                        temp.shift_ = (stylecounter(reader, "HP") + stylecounter(reader, "HV") + stylecounter(reader, "HL") + stylecounter(reader, "HF") + stylecounter(reader, "HS"));
+                        temp.r3_Andflushpanel = stylecounter(reader, "PP");
+                        temp.spandrolSP_ = stylecounter(reader, "SP");
+                        temp.spandrolSV_ = stylecounter(reader, "SV");
+                        temp.shadowboxBV_ = stylecounter(reader, "BV");
+                        temp.shadowboxSB_ = stylecounter(reader, "SB");
+                        temp.projectpanel_ = stylecounter(reader, "FP");
 
                         styletable_.Add(temp);
                     }               
@@ -49,48 +48,8 @@ namespace WebApplication1.Models
             finally {
                 connection.Close();
             }
-
-
-
         }
 
-        //public Style(List<string> styles)
-        //{
-        //    foreach (String stylename in styles)
-        //    {
-        //        string str_SQL = "SELECT name FROM styles where '" + stylename + "' IN (O1,O2,O3,O4,O5,O6,O7,O8)";
-        //        OleDbConnection connection = new OleDbConnection(Conection.getConectionString());
-        //        try
-        //        {
-        //            connection.Open();
-        //            OleDbCommand command = new OleDbCommand(str_SQL, connection);
-        //            OleDbDataReader reader = command.ExecuteReader();
-
-        //            if (stylename == "SW")
-        //            {
-        //                this.stylesForAwning_ = new List<string>();
-        //                while (reader.Read())
-        //                {
-        //                    this.stylesForAwning_.Add(reader["name"].ToString());
-        //                }
-        //            }
-
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            if (stylename == "SW")
-        //            {
-        //                this.stylesForAwning_ = new List<string>();
-        //                stylesForAWning_.Add(ex.ToString());
-        //            }
-        //        }
-        //        finally
-        //        {
-        //            connection.Close();
-        //        }
-        //    }
-
-        //}
 
         public int stylecounter(System.Data.OleDb.OleDbDataReader input,string styles)
         {

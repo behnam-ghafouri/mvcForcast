@@ -1,38 +1,33 @@
-﻿using Antlr.Runtime;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Data.OleDb;
 using System.Data;
-using System.Web.Script.Serialization;
-using Newtonsoft.Json;
 
+//this class considered as the list of all the job tables and contains the required calculation
 namespace WebApplication1.Models
 {
-
-    struct Schemajobs
+    public class Jobs
     {
-        public string job_ { get; set; }
-    }
+        
+        public List<Job> allofthejobtables_ { get; set; }
 
-    public class JobTable
-    {
-       
-        public static List<Job> getAllJobTables()
-        {           
+        public Jobs()
+        {
+            //in the first part reading and taking out the good jobs happens
+            //finaly all of the jobs that we need to check are in this variable
+            List<string> goodjobs = new List<string>();
+            OleDbConnection connection = new OleDbConnection(Conection.getConectionString());
             try
             {
-                OleDbConnection connection = new OleDbConnection(Conection.getConectionString());
+                
                 connection.Open();
                 System.Data.DataTable dt = null;
 
 
                 // Get the data table containing the schema
                 dt = connection.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null);
-
-
-
 
                 List<Schemajobs> schemajobslist = new List<Schemajobs>();
 
@@ -42,7 +37,7 @@ namespace WebApplication1.Models
                                   {
                                       job_ = dr["TABLE_NAME"].ToString()
                                   }
-                                    ).ToList();                
+                                    ).ToList();
 
 
 
@@ -61,8 +56,7 @@ namespace WebApplication1.Models
                     xjobslist.Add(reader["JOB"].ToString());
                 }
 
-                //finaly all of the jobs that we need to check are in this variable
-                List<string> goodjobs = new List<string>();
+
 
                 foreach (string x in xjobslist)
                 {
@@ -77,40 +71,27 @@ namespace WebApplication1.Models
                     }
 
                     if (flag) { goodjobs.Add(x); }
-                }         
-
-
-
-
-                List<Job> data = new List<Job>();
+                }
                 
-                //foreach (string onejob in goodjobs)
-                //{
-                //    Job job = new Job();
-                //    if (job.getJobsExcludedFromGlazing(onejob).Count() != 0)
-                //    {
-                //        foreach (Job elm in job.getJobsExcludedFromGlazing(onejob))
-                //        {
-                //            data.Add(elm);
-                //        }
-                //    }
-                //}
-
-                return data;
-                
+              
             }
-            
+
             catch (Exception ex)
             {
-              
-                List<Job> data = new List<Job>();
-                //data.Add(new Job() { job = ex.ToString() });
-                return data;
+                goodjobs.Add("Error happend during reading the schema jobs and comparing to Z_jobs");
+
             }
+            finally
+            {
+                connection.Close();
+            }
+
+            this.allofthejobtables_ = new List<Job>();
+            foreach(string onejob in goodjobs)
+            {
+                this.allofthejobtables_.Add(new Job(onejob));
+            }
+                
         }
-
     }
-
-   
-
 }

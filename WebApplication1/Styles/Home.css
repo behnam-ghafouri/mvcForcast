@@ -141,3 +141,113 @@ body.landscape > .toolbar > h1 {
     justify-content: center;
     display: flex;
 }
+body {
+    font-family: Raleway;
+}
+
+label {
+    font-weight: 10 !important;
+    font-size: 16px;
+    text-transform: none;
+    font-family: Raleway;
+    margin-bottom: 0rem;
+    letter-spacing: 0px;
+}
+
+
+.btn-outline-info:hover {
+    background-color: transparent;
+    color: #000;
+    border-color: #17a2b8;
+}
+
+.btn-outline-info {
+    color: #fff;
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+}
+
+.table-info,
+.table-info > td,
+.table-info > th {
+    background-color: #15a9df;
+}
+
+.toolbar {
+    padding: 20px;
+    border: solid 1px lightgray;
+    
+}
+
+.toolbarButton {
+    padding: 8px;
+    border: solid 1px lightgray;
+}
+
+.searchButton{
+    margin:10px;
+}
+
+span {
+    font-weight: 10 !important;
+    font-family: Raleway;
+}
+
+.input-group > .form-control:focus {
+    outline: none !important;
+    border-color: #15a9df;
+    box-shadow: 0 0 10px #15a9df;
+}
+
+h2,
+th {
+    text-transform: none;
+    font-family: Raleway;
+}
+
+.custom-control-input:checked ~ .custom-control-label::before {
+    background-color: #15a9df;
+}
+
+
+/*
+            td.details-control {
+               background: url('https://datatables.net/examples/resources/details_open.png') no-repeat center center;
+
+                cursor: pointer;
+            }*/
+
+
+
+td.details-control:after {
+    content: "\f055"; /* this is your text. You can also use UTF-8 character codes as I do here */
+    font-family: FontAwesome;
+    padding-left: 10px !important;
+    vertical-align: middle;
+    color: green;
+}
+
+tr.shown td.details-control:after {
+    /*background: url('https://datatables.net/examples/resources/details_close.png') no-repeat center center;*/
+    content: "\f056"; /* this is your text. You can also use UTF-8 character codes as I do here */
+    font-family: FontAwesome;
+    padding-left: 10px !important;
+    vertical-align: middle;
+    cursor: pointer;
+    color: red;
+}
+
+th, td {
+    white-space: nowrap;
+}
+
+div.dataTables_wrapper {
+    margin: 0 auto;
+}
+
+
+.innerTable {
+    width: 50%;
+    padding-right: 15px;
+    padding-left: 15px;
+}

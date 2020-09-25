@@ -4,24 +4,33 @@ using System.Linq;
 using System.Web;
 using System.Data.OleDb;
 using System.Data;
+using System.Dynamic;
 
 //this class considered as the list of all the job tables and contains the required calculation
 namespace WebApplication1.Models
 {
+    struct Schemajobs
+    {
+        public String job_ { get; set; }
+    }
+
     public class Jobs
     {
         
         public List<Job> allofthejobtables_ { get; set; }
 
+      
         public Jobs()
         {
-            //in the first part reading and taking out the good jobs happens
-            //finaly all of the jobs that we need to check are in this variable
+           
+            //finaly all of the jobs that we need to check are in this variable called "goodjobs"
+
             List<string> goodjobs = new List<string>();
+
+            //reading all of tables in database who has three letter name and saving them in variable called "schemajobslist"
             OleDbConnection connection = new OleDbConnection(Conection.getConectionString());
             try
             {
-                
                 connection.Open();
                 System.Data.DataTable dt = null;
 
@@ -41,7 +50,7 @@ namespace WebApplication1.Models
 
 
 
-
+                //reading all of the jobs from z_jobs and store the in variable called "xjobslist"
                 string str_SQL = "SELECT JOB FROM z_jobs where Completed = 0";
 
                 OleDbCommand command = new OleDbCommand(str_SQL, connection);
@@ -57,7 +66,7 @@ namespace WebApplication1.Models
                 }
 
 
-
+                //compare "xjobslist" and "schemajobslist" if the job from z_jobs exists in the databas 3 letter tables then we will save it in the goodjobs variable
                 foreach (string x in xjobslist)
                 {
                     bool flag = false;
@@ -71,27 +80,28 @@ namespace WebApplication1.Models
                     }
 
                     if (flag) { goodjobs.Add(x); }
-                }
-                
+                }               
               
             }
 
             catch (Exception ex)
             {
-                goodjobs.Add("Error happend during reading the schema jobs and comparing to Z_jobs");
-
+                
+                
             }
             finally
             {
                 connection.Close();
             }
 
+            //at this part we have all of the good jobs then we only need to read every jobs detail and save them in the current properties
+
             this.allofthejobtables_ = new List<Job>();
+
             foreach(string onejob in goodjobs)
             {
                 this.allofthejobtables_.Add(new Job(onejob));
-            }
-                
+            }             
         }
     }
 }

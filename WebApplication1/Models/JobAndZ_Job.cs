@@ -6,7 +6,7 @@ using System.Data.OleDb;
 
 namespace WebApplication1.Models
 {
-    //after user selects job and floor for forecast styles i have to take every panelpunch_ and AwnStyle_ for that job
+    //after user selects job and floor for forecast styles i have to take every panelpunch_ and AwnStyle_ for that job from z_jobs table
     public class JobAndZ_Job
     {
         public string jobname_ { get; set; }
@@ -33,18 +33,24 @@ namespace WebApplication1.Models
 
                 OleDbDataReader reader = command.ExecuteReader();
 
+                //job should have value in the cells for panelpunch or awningstyle otherwise it will save empty in that properties 
+                String temp1 = "panelPunchNotFound";
+                String temp2 = "AwningStyleNotFound";
+
                 while (reader.Read())
                 {
-                    String temp1 = "empty";
-                    String temp2 = "empty";
-
+                    //prevent to have temp1 and temp2 from 2 different rows
+                    temp1 = "panelPunchNotFound";
+                    temp2 = "AwningStyleNotFound";
+                    
                     if (reader["PanelPunch"].ToString() != "") { temp1 = reader["PanelPunch"].ToString(); }
                     if (reader["AwnStyle"].ToString() != "") { temp2 = reader["AwnStyle"].ToString(); }
-
-                    this.panelpunch_ = temp1;
-                    this.AwnStyle_ = temp2;
                 }
-                
+
+                //if there is more than one row per job in z_jobs it will just have the last row for that job and all of the previous ones will be overwritten 
+                this.panelpunch_ = temp1;
+                this.AwnStyle_ = temp2;
+
             }
             catch (Exception exe)
             {

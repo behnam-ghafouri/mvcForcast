@@ -49,10 +49,10 @@ namespace WebApplication1.Controllers
             
             public ActionResult Index()
             {
-
-            Jobs gotofrontend = new Jobs();
-            
-            return View(gotofrontend);            
+            //preparing a list of goodjobs and reading all of the tables happens in this model
+            Jobs pageOpens = new Jobs();
+          
+            return View(pageOpens);            
             }
 
             [HttpPost]
@@ -64,15 +64,22 @@ namespace WebApplication1.Controllers
                 //convert the type to list of job
                 var json_serializer = new JavaScriptSerializer();
                 Jobs jobFromFrontendForQuery = json_serializer.Deserialize<Jobs>(jobquery);
+
                 var test = 0;
-                //we are going to store required data for every job 
+                //we are going to store required data for every job received from front end user
                 List<JobAndZ_Job> jobsWithR3AndAwningData = new List<JobAndZ_Job>();
+
                 foreach(Job RcvJob in jobFromFrontendForQuery.allofthejobtables_)
                 {
                     jobsWithR3AndAwningData.Add(new JobAndZ_Job(RcvJob.jobname_,RcvJob.jobdetail_));
                 }
 
+                if (reportname == "1")
+                {
 
+                }else if(reportname == "2"){
+
+                }
                 //send the jobsWithR3AndAwningData to StylesForsendToFront1
                 StylesForSendToFront1 forecast1 = new StylesForSendToFront1(jobsWithR3AndAwningData, stylesWeLookFor);
 

@@ -32,15 +32,13 @@
     <script>
         var ServerData = "Empty";
         var table = null;
-        var prepedReturnArr = [];
-
+        var AllEverySingleCheckBox = [];
+        var AllEverySingleCheckBoxForSelectAll = [];
         $(document).ready(function () {
             $("#LoadingImage").hide();
             mainfunction()
             toggle()
             //$('#GlazingReport').DataTable().destroy();
-
-
 
         });
 
@@ -59,7 +57,6 @@
 
         //main function of the program
         async function mainfunction() {
-
             ServerData = $("#customInput").data("value");       
            
             var temp = [];
@@ -93,9 +90,7 @@
                 success: function (response) {
                     $("#LoadingImage").hide();
 
-                    console.log("ajax responded! ", response)
-                    //ServerData = response
-                    //setTimeout(() => { drawTable(ServerData) }, 1200)
+                    console.log("ajax responded! ", response)           
 
 
                 },
@@ -146,13 +141,43 @@
                     output.push({ job: elm.job, floor: elm.floor, checked: "" });
                 }
             })
+
+            function compare(in1, in2) {
+                if (in1.floor.toUpperCase() > in2.floor.toUpperCase()) return 1;
+                if (in1.floor.toUpperCase() < in2.floor.toUpperCase()) return -1;
+                               
+            }
+            output.sort(compare);
+
+            
             return output;
         }
 
+        function getUniqDataForAllJobs(input) {
+            var input_ = input
+            var input_ = JSON.parse(JSON.stringify(input))
+            var output = [];
+
+            input_.forEach(elm => {
+                var flag = true;
+                output.forEach(elm2 => {
+                    if (elm.job == elm2.job) {
+                        flag = false;
+                    }
+                })
+                if (flag) {
+                    output.push({job: elm.job, checked: "" });
+                }
+            })
+            return output;
+        }
 
         function drawTable(input) {
 
-            prepedReturnArr = getUniqDataForAllJobFloor(input)
+            AllEverySingleCheckBox = getUniqDataForAllJobFloor(input)
+            AllEverySingleCheckBoxForSelectAll = getUniqDataForAllJobs(input)
+            
+
             //console.log(prepedReturnArr)
 
             $('#GlazingReport').DataTable({
@@ -184,7 +209,7 @@
                 var tdi = tr.find("i.fa");
                 var row = $('#GlazingReport').DataTable().row(tr);
 
-                console.log(row)
+                
 
                 if (row.child.isShown()) {
                     // This row is already open - close it
@@ -210,23 +235,38 @@
         //click on green plus on each rows in tabel trigers this function
         function format(d) {
             var Internall = [];
-
+            var temp;
+            AllEverySingleCheckBoxForSelectAll.forEach(elm => {
+                if (elm.job == d.job) {                    
+                    temp = '<table style="border: 2px solid lightgray;" class="table table-hover nowrap innerTable" ><thead class="table-info" style="text-align: center;"><tr><th>Floors</th><th><div class="custom-control custom-checkbox custom-control-inline"><input   onclick="selectall(this)"   value="' + d.job + '" type="checkbox" class="custom-control-input" id="' + d.job + '"  ' + elm.checked + '><label class="custom-control-label" for="' + d.job + '" >Select all</label></div></th></tr></thead> <tbody>';
+                }
+            })
             //`d` is the original data object for the row
-            // var temp = '<table style="border: 2px solid lightgray;" class="table table-hover nowrap" ><thead class="table-info" style="text-align: center;"><tr><th>Floors</th><th><input onclick="selectall(this)"  class="checkbox" value="' + d.job + '" type="checkbox">Select all</th></tr></thead> <tbody>	';
-            var temp = '<table style="border: 2px solid lightgray;" class="table table-hover nowrap innerTable" ><thead class="table-info" style="text-align: center;"><tr><th>Floors</th><th><div class="custom-control custom-checkbox custom-control-inline"><input onclick="selectall(this)"  value="' + d.job + '" type="checkbox" class="custom-control-input" id="customCheck1"><label class="custom-control-label" for="customCheck1">Select all</label></div></th></tr></thead> <tbody>';
-            prepedReturnArr.forEach(elm => {
+            //var temp = '<table style="border: 2px solid lightgray;" class="table table-hover nowrap" ><thead class="table-info" style="text-align: center;"><tr><th>Floors</th><th><input onclick="selectall(this)"  class="checkbox" value="' + d.job + '" type="checkbox" >Select all</th></tr></thead> <tbody>	';
+            
+            AllEverySingleCheckBox.forEach(elm => {
                 if (elm.job == d.job) {
                     temp = temp + '<tr><td style="text-align: center;" >' + elm.floor + '</td><td class="c " style="text-align: center;"><input onclick="selectsingle(this)"  class="' + elm.job + ' singleCheck" value=' + JSON.stringify(elm) + ' type="checkbox" ' + elm.checked + '></td></tr>'
                 }
             })
             temp = temp + ' </tbody></table>'
-
             return temp
         }
 
-        //select or deselect all floors for one job
+        //check or uncheck the "select all" all floors for one job
         function selectall(input) {
-
+            //changes it own property in the global variable 
+            AllEverySingleCheckBoxForSelectAll.forEach(elm => {
+                if (elm.job == input.value) {
+                    if (input.checked == true) {
+                        elm.checked = "checked";
+                    }
+                    if (input.checked == false) {
+                        elm.checked = "";
+                    }
+                }
+            })
+            //changes all the chech boxes for floors on that job to checked or uncheked 
             for (item of document.getElementsByClassName(input.value)) {
                 if (input.checked == true) {
                     item.checked = true;
@@ -236,11 +276,9 @@
                 }
             }
 
-
-            prepedReturnArr.forEach(elm => {
-
+            //changing the status of the global variable AllEverySingleCheckBox 
+            AllEverySingleCheckBox.forEach(elm => {
                 if (elm.job == input.value) {
-
                     if (input.checked == true) {
                         elm.checked = "checked";
                     }
@@ -249,14 +287,15 @@
                     }
                 }
             })
-            console.log(prepedReturnArr)
+        
         }
         //if user clicks on every single floor it loops throw prepedReturnArr and changes the status of the checked property
         function selectsingle(input) {
-
+            
             var temp = JSON.parse(input.value);
 
-            prepedReturnArr.forEach(elm => {
+            //change the status for that single item AllEverySingleCheckBox 
+            AllEverySingleCheckBox.forEach(elm => {
                 if (elm.job == temp.job && elm.floor == temp.floor) {
                     if (input.checked == false) {
                         elm.checked = "";
@@ -266,15 +305,64 @@
                     }
                 }
             })
-            console.log(prepedReturnArr)
+
+            //checking to see if there is need to change the status of the select all checkbox
+
+            //when user unchecks one box we have to make sure select all is uncheked
+            if (input.checked == false) {                
+                var selectallcheckbox =  document.getElementById(temp.job)
+                //if is extra condition check when user uncheks something for sure we have to uncheck select all
+                if (selectallcheckbox.checked) {
+                    selectallcheckbox.checked = false                    
+                }
+                //chanding the status of that select all check box in the global variable
+                AllEverySingleCheckBoxForSelectAll.forEach(elm => {
+                    if (elm.job == selectallcheckbox.value) {
+                        elm.checked = "";
+                    }
+                })
+            }
+
+         
+            //when user chekces select box if all the others are selected we have to check select all
+            if (input.checked == true) {
+                var flag = true
+
+                //looping through other boxes in that class if all of them are checked checks the select all aswell
+                for (item of document.getElementsByClassName(temp.job)) {
+                    if (!item.checked) {
+                        flag = false
+                    }
+                    
+                }
+
+                //flag will be true if all of the other boxes are true then it checks the select all aswell
+                if (flag) {
+                    var selectallcheckbox = document.getElementById(temp.job)
+                    selectallcheckbox.checked = true
+                    //chanding the status of that select all check box in the global variable
+                    AllEverySingleCheckBoxForSelectAll.forEach(elm => {
+                        if (elm.job == selectallcheckbox.value) {
+                            elm.checked = "checked";
+                        }
+                    })
+
+
+                }
+                
+            }           
         }
 
         //to prepare and send the data to bach end
         async function search() {
-            var input_ = JSON.parse(JSON.stringify(prepedReturnArr))
+            //deep copy of the global variable AllEverySingleCheckBox to make sure nothing is changed
+            var input_ = JSON.parse(JSON.stringify(AllEverySingleCheckBox))
             var out = [];
             input_ = input_.filter(elm => { return elm.checked != "" });
-                        
+
+            input_.forEach(elm => {
+                console.log(elm)
+            })            
                       
             input_.forEach(elm => {
 
@@ -317,8 +405,7 @@
             })
             
             var out4 = { allofthejobtables_:out3}
-            //var test = doAjax(JSON.stringify(out3))
-           // console.log(JSON.stringify(out4))
+
             var test = doAjax(JSON.stringify(out4))
 
         }

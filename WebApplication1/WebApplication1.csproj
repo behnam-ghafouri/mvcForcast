@@ -133,11 +133,9 @@
     <Compile Include="Models\Flushpanel.cs" />
     <Compile Include="Models\Job.cs" />
     <Compile Include="Models\JobDetail.cs" />
-    <Compile Include="Models\Jobestimate.cs" />
     <Compile Include="Models\JobFloor.cs" />
     <Compile Include="Models\Jobs.cs" />
     <Compile Include="Models\JobAndZ_Job.cs" />
-    <Compile Include="Models\JobTable.cs" />
     <Compile Include="Models\Projectpanel.cs" />
     <Compile Include="Models\R3.cs" />
     <Compile Include="Models\ShadowboxBV.cs" />
@@ -147,7 +145,6 @@
     <Compile Include="Models\SpandrelSV.cs" />
     <Compile Include="Models\Style.cs" />
     <Compile Include="Models\StyleDetail.cs" />
-    <Compile Include="Models\ReportData.cs" />
     <Compile Include="Models\StylesForSendToFront1.cs" />
     <Compile Include="Models\StylesForSendToFront2.cs" />
     <Compile Include="Models\SwingDoor.cs" />

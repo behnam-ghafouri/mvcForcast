@@ -26,7 +26,11 @@
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
 
 
-
+    <style>
+        table.dataTable td {
+            word-break: break-word;
+        }
+    </style>
 
 
     <script>
@@ -34,12 +38,12 @@
         var table = null;
         var AllEverySingleCheckBox = [];
         var AllEverySingleCheckBoxForSelectAll = [];
+        var UserViewTable = null;
         $(document).ready(function () {
             $("#LoadingImage").hide();
             mainfunction()
             toggle()
-            //$('#GlazingReport').DataTable().destroy();
-
+       
         });
 
         function toggle() {
@@ -77,7 +81,7 @@
         //doing the ajax
         async function doAjax(input) {
             $("#LoadingImage").show();
-            console.log("sending ajax",input)
+            
 
             $.ajax({
                 async: "true",
@@ -287,8 +291,10 @@
                     }
                 }
             })
-        
+
+            updateUserView();
         }
+
         //if user clicks on every single floor it loops throw prepedReturnArr and changes the status of the checked property
         function selectsingle(input) {
             
@@ -350,19 +356,82 @@
 
                 }
                 
-            }           
+            }   
+
+            updateUserView();
+        }
+
+        //this function shows selected job(floorssss,)
+        function updateUserView() {            
+            var selectedJobFloorsToShow = [];
+            var groupedByJob = [];
+
+            AllEverySingleCheckBox.forEach(elm => {
+                if (elm.checked == "checked") {
+                    selectedJobFloorsToShow.push(elm)
+                }                
+            })
+            
+            selectedJobFloorsToShow.forEach(elm => {
+                var flag = true;
+
+                groupedByJob.forEach(elm2 => {
+                    if (elm.job == elm2.job) {flag=false}
+                })
+
+                if (flag) { groupedByJob.push({job:elm.job,floors:""})}
+            })
+
+
+            var i = 0;
+            
+            groupedByJob.forEach(elm => {
+                var coutOfSelectedFloors = 0;
+                selectedJobFloorsToShow.forEach(elm2 => {
+                    if (elm.job == elm2.job) {
+                        coutOfSelectedFloors++;
+                        i++;
+                        if (i == 10) {
+                            i = 0;
+                            elm.floors = elm2.floor + ",<br>" + elm.floors
+                        }
+                        elm.floors = elm2.floor + "," +elm.floors
+                    }
+                })
+                elm.job = elm.job + "(" + coutOfSelectedFloors+ ")"
+            })
+
+            
+            $('#SelectedGlazingReport').DataTable({
+                "responsive": true,
+                "destroy": true,
+                "data": groupedByJob,
+                "searching": false,
+                "paging": false,
+                //"scrollY": "645px",
+               // "scrollCollapse": true,
+                "columns": [
+                  
+                    { "data": "job" },
+                    { "data": "floors" }
+
+                ],
+                
+                "order": [[0, 'asc']]
+            });
+
+            $('#SelectedGlazingReport').DataTable().draw();
+
         }
 
         //to prepare and send the data to bach end
         async function search() {
-            //deep copy of the global variable AllEverySingleCheckBox to make sure nothing is changed
+            //deep copy of the global variable AllEverySingleCheckBox to make sure nothing won't be changed
             var input_ = JSON.parse(JSON.stringify(AllEverySingleCheckBox))
             var out = [];
             input_ = input_.filter(elm => { return elm.checked != "" });
 
-            input_.forEach(elm => {
-                console.log(elm)
-            })            
+                    
                       
             input_.forEach(elm => {
 
@@ -373,10 +442,13 @@
              
                 })
             })
+            
+            //prepare model to send backend starts here
 
-            //prepare model to send back
-            var out2=[]
+            var out2 = []
+
             //add unique jobs in array
+            //out2 contains all of the unique jobs
             out.forEach(elm => {
                 var flag = true
 
@@ -392,13 +464,14 @@
             })
 
             //saving detail in model for every job
+            //out2 containes the unique jobs from the user selected
+            
             var out3 = []
             out2.forEach(elm => {
                 var detail = []
                 out.forEach(elm2 => {
                     if (elm.job == elm2.job) {
-                        detail.push({ floor: elm2.floor, tag: elm2.tag, style: elm2.style,checked:"" })
-                        
+                        detail.push({floor: elm2.floor, tag: elm2.tag, style: elm2.style})
                     }
                 })
                 out3.push({ jobname_: elm.job, jobdetail_: detail })
@@ -406,8 +479,8 @@
             
             var out4 = { allofthejobtables_:out3}
 
-            var test = doAjax(JSON.stringify(out4))
-
+            //var test = doAjax(JSON.stringify(out4))
+           
         }
 
     </script>
@@ -591,23 +664,40 @@
         </div>
     </div>
     <!--END Loading Image-->
-    <div class="container">
+    <div class="container-fluid">
 
-        <div style="padding:20px">
-            <table id="GlazingReport" class="table table-hover table-bordered " style="border: solid 2px lightgray;text-align: center; ">
-                <thead class="table-info" style="text-align: center;">
-                    <tr>
-                        <th class="selectall">#</th>
-                        <th>Job</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+        <div class="row">
+
+            <div class="col-sm-8">
+                    <table id="GlazingReport" class="table table-hover table-bordered " style="border: solid 2px lightgray;text-align: center; ">
+                        <thead class="table-info" style="text-align: center;">
+                            <tr>
+                                <th class="selectall">#</th>
+                                <th>Job</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            <div class="col-sm-4">
+                    <table id="SelectedGlazingReport" class="table table-hover table-bordered " style="border: solid 2px lightgray;text-align: center; ">
+                        <thead class="table-info" style="text-align: center;">
+                            <tr>
+                                <th>Selected Jobs(Count)</th>
+                                <th>Selected Floors</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+            </div>
+
+            </div>
+
+            <input type="hidden" id="customInput" data-value="@JsonConvert.SerializeObject(Model)" />
         </div>
-
-        <input type="hidden" id="customInput" data-value="@JsonConvert.SerializeObject(Model)" />
-    </div>
 
 </body>
 

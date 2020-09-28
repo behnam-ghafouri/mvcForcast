@@ -45,20 +45,22 @@ namespace WebApplication1.Controllers
 {
    
         public class ForecastController : Controller
-        {       
-            
+        {
+
+            Jobs pageOpens = new Jobs();
+
             public ActionResult Index()
             {
             //preparing a list of goodjobs and reading all of the tables happens in this model
-            Jobs pageOpens = new Jobs();
-          
+            
+           
             return View(pageOpens);            
             }
 
             [HttpPost]
             public ActionResult RcvJobs(string jobquery ,string[] stylesWeLookFor , string reportname)
             {
-
+            var tesrrrt = 555;
                 try
                 {
                 //convert the type to list of job

@@ -24,7 +24,6 @@ namespace WebApplication1.Models
         {
            
             //finaly all of the jobs that we need to check are in this variable called "goodjobs"
-
             List<string> goodjobs = new List<string>();
 
             //reading all of tables in database who has three letter name and saving them in variable called "schemajobslist"

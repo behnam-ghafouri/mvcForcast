@@ -25,7 +25,7 @@ namespace WebApplication1.Models
         public Projectpanel projectpanel_ { get; set; }
 
 
-        public StylesForSendToFront2(List<JobAndZ_Job> input,string[] StylesNeedForecast)
+        public StylesForSendToFront2(List<Job> input,string[] StylesNeedForecast)
         {
             Style styleobject = new Style();
 
@@ -37,7 +37,6 @@ namespace WebApplication1.Models
             this.shadowboxbv_ = new ShadowboxBV(input, styleobject);
             this.flushpanel_ = new Flushpanel(input, styleobject);
             this.projectpanel_ = new Projectpanel(input, styleobject);
-
 
 
         }

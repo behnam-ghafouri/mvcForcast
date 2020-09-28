@@ -92,10 +92,9 @@
                 dataType: "json",
            
                 success: function (response) {
+
                     $("#LoadingImage").hide();
-
                     console.log("ajax responded! ", response)           
-
 
                 },
                 failure: function (response) {
@@ -479,7 +478,7 @@
             
             var out4 = { allofthejobtables_:out3}
 
-            //var test = doAjax(JSON.stringify(out4))
+            doAjax(JSON.stringify(out4))
            
         }
 

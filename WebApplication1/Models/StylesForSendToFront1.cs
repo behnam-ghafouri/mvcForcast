@@ -14,7 +14,7 @@ namespace WebApplication1.Models
         public Awningmetra awningmetra_ { get; set; }
         public Awningquest awningquest_ { get; set; }
 
-        public StylesForSendToFront1(List<JobAndZ_Job> input,string[] StylesNeedForecast)
+        public StylesForSendToFront1(List<Job> input,string[] StylesNeedForecast)
         {
             Style styleobject = new Style();
 
@@ -27,7 +27,7 @@ namespace WebApplication1.Models
 
 
 
-            var test = 0;
+            
         }
 
         

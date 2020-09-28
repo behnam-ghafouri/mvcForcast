@@ -13,6 +13,10 @@ namespace WebApplication1.Models
         public string jobname_ { get; set; }
         public List<JobDetail> jobdetail_ { get; set; }
 
+        public string panelpunch_ { get; set; }
+
+        public string AwnStyle_ { get; set; }
+
         public Job() { }
 
         //get a table by considering the situation to take out all the floors who existis in the X_glazing
@@ -63,7 +67,22 @@ namespace WebApplication1.Models
         }
 
 
-        
+        //read the panelpunch and awning for existing entities 
+        public Job(Job job_, Z_jobsTable z_jobstable)
+        {
+            this.jobname_ = job_.jobname_;
+            this.jobdetail_ = job_.jobdetail_;
+
+            //looping through the job model and find the required properties for the job
+            foreach (Z_jobTableDetail onerow in z_jobstable.Z_jobTableDetail_)
+            {
+                if (job_.jobname_ == onerow.JOB_)
+                {
+                    this.panelpunch_ = onerow.PanelPunch_;
+                    this.AwnStyle_ = onerow.AwnStyle_;
+                }
+            }
+        }
 
     }
 }

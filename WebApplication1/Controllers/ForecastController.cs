@@ -10,86 +10,60 @@ using WebApplication1.Models;
 using System.Web.Optimization;
 
 
-/*this part fetches all the styles they have doors in them*/
-
-//List<string> styleWD = new List<string>();
-
-//OleDbConnection cn_Quest = new OleDbConnection(@"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=C:\Users\bghafouri\OneDrive - Quest Window Systems Inc\Desktop\New folder\Quest.mdb;");
-
-//         string str_SQL = "SELECT JOB FROM Query2_jobs";
-
-
-//         OleDbCommand command = new OleDbCommand(str_SQL, cn_Quest);
-//try
-// {
-//cn_Quest.Open();
-
-//OleDbDataReader reader = command.ExecuteReader();
-
-//while (reader.Read())
-//{
-//    styleWD.Add(reader["JOB"].ToString());
-
-//}
-
-// }
-//catch (Exception ex)
-//{
-//    return ex.ToString();
-//}
-//    return "styleWD.ToString()";
-
-
-
 namespace WebApplication1.Controllers
 {
    
         public class ForecastController : Controller
         {
 
-            Jobs pageOpens = new Jobs();
-
             public ActionResult Index()
-            {
-            //preparing a list of goodjobs and reading all of the tables happens in this model
+            {           
+            //this is z_job table
+            Z_jobsTable z_Jobs_ = new Z_jobsTable();
             
-           
+            //preparing a list of goodjobs and reading all of the tables happens in this model
+            //based on all the jobs in z_jobs and comparing the schema jobs loads the job details
+            Jobs pageOpens = new Jobs(z_Jobs_);
+
             return View(pageOpens);            
             }
 
             [HttpPost]
             public ActionResult RcvJobs(string jobquery ,string[] stylesWeLookFor , string reportname)
             {
-            var tesrrrt = 555;
+
                 try
                 {
-                //convert the type to list of job
+                //convert the type to list of job Deserializing
                 var json_serializer = new JavaScriptSerializer();
                 Jobs jobFromFrontendForQuery = json_serializer.Deserialize<Jobs>(jobquery);
 
-                var test = 0;
+ 
+                //reading Z_jobs table for one time and passing that value for every job to find the required global variables
+                Z_jobsTable z_Jobs_ = new Z_jobsTable();
+
                 //we are going to store required data for every job received from front end user
-                List<JobAndZ_Job> jobsWithR3AndAwningData = new List<JobAndZ_Job>();
+                List<Job> jobsWithR3AndAwningData = new List<Job>();
 
-                foreach(Job RcvJob in jobFromFrontendForQuery.allofthejobtables_)
+                foreach (Job RcvJob in jobFromFrontendForQuery.allofthejobtables_)
                 {
-                    jobsWithR3AndAwningData.Add(new JobAndZ_Job(RcvJob.jobname_,RcvJob.jobdetail_));
+                    jobsWithR3AndAwningData.Add(new Job(RcvJob , z_Jobs_));
                 }
 
-                if (reportname == "1")
+                StylesForSendToFront1 forecast1;
+                StylesForSendToFront2 forecast2;
+
+                if (reportname == "1" || true)
                 {
-
-                }else if(reportname == "2"){
-
+                    //send the jobsWithR3AndAwningData to StylesForsendToFront1
+                    forecast1 = new StylesForSendToFront1(jobsWithR3AndAwningData, stylesWeLookFor);
                 }
-                //send the jobsWithR3AndAwningData to StylesForsendToFront1
-                StylesForSendToFront1 forecast1 = new StylesForSendToFront1(jobsWithR3AndAwningData, stylesWeLookFor);
+                else if(reportname == "2" && false){
+                    //send the jobsWithR3AndAwningData to StylesForsendToFront2
+                    forecast2 = new StylesForSendToFront2(jobsWithR3AndAwningData, stylesWeLookFor);
+                }
 
-
-                //send the jobsWithR3AndAwningData to StylesForsendToFront2
-                StylesForSendToFront2 forecast2 = new StylesForSendToFront2(jobsWithR3AndAwningData, stylesWeLookFor);
-                                       
-
+                               
 
                 return Json(forecast1);
                 

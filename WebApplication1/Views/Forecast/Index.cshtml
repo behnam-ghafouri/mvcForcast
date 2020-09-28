@@ -26,25 +26,6 @@
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.js"></script>
 
 
-    <style>
-        table.dataTable td {
-            word-break: break-word;
-        }
-        .badge-pill {
-            margin: 5px;
-            font-size: 15px;
-            background-color: #15a9df;
-        }
-        .badges, .badges:hover {
-            color: white !important;
-            cursor: text !important;
-            font-family: Raleway;
-            font-weight: 100;
-       
-        }
-
-  
-    </style>
 
 
     <script>
@@ -507,13 +488,30 @@
     </script>
 
     <style>
+        table.dataTable td {
+            word-break: break-word;
+        }
+
+        .badge-pill {
+            margin: 5px;
+            font-size: 15px;
+            background-color: #15a9df;
+        }
+
+        .badges, .badges:hover {
+            color: white !important;
+            cursor: text !important;
+            font-family: Raleway;
+            font-weight: 100;
+        }
+
         body {
             font-family: Raleway;
         }
 
         label {
-            font-weight: 10 !important;
-            font-size: 16px;
+            font-weight: 100 !important;
+            font-size: 15px;
             text-transform: none;
             font-family: Raleway;
             margin-bottom: 0rem;
@@ -528,9 +526,9 @@
         }
 
         .btn-outline-info {
-            color: #000;
-            background-color: #15a9df;
-            border-color: #15a9df;
+            color: #FFF;
+            background-color: #15a9df!important;
+            border-color: #15a9df!important;
         }
 
         .table-info,
@@ -544,15 +542,10 @@
             border: solid 2px lightgray;
             border-radius: 0px;
         }
-
-
-
-
         span {
-            font-weight: 10 !important;
+            font-weight: 100 !important;
             font-family: Raleway;
         }
-
         .input-group > .form-control:focus {
             outline: none !important;
             border-color: #15a9df;
@@ -568,16 +561,6 @@
         .custom-control-input:checked ~ .custom-control-label::before {
             background-color: #15a9df;
         }
-
-
-        /*
-        td.details-control {
-           background: url('https://datatables.net/examples/resources/details_open.png') no-repeat center center;
-
-            cursor: pointer;
-        }*/
-
-
 
         td.details-control:after {
             content: "\f055"; /* this is your text. You can also use UTF-8 character codes as I do here */

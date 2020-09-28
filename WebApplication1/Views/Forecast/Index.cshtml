@@ -396,29 +396,34 @@
             })
 
 
-            var i = 0;
+            
 
             groupedByJob.forEach(elm => {
                 var coutOfSelectedFloors = 0;
+                var temp = "";
+                var i = 0;
+
                 selectedJobFloorsToShow.forEach(elm2 => {
+                    
                     if (elm.job == elm2.job) {
                         coutOfSelectedFloors++;
-                        i++;
-                        if (i == 5) {
-                            i = 0;
-                            // elm.floors = elm2.floor + ",<br>" + elm.floors
-                            elm.floors = " <a class='badge badges badge-pill badge-info'>" + elm2.floor + "</a>" + "<br>" + " <a class='badge badges badge-pill badge-info'>" + elm.floors + "</a>"
-
+                        
+                        if (i != 5 ) {
+                            
+                            temp = temp+ " <a class='badge badges badge-pill badge-info'>" + elm2.floor + "</a>" 
+                            
+                        } else if (i == 5) {
+                            i = 0;                            
+                            temp = temp + "<br>" +" <a class='badge badges badge-pill badge-info'>" + elm2.floor + "</a>"  
                         }
-                        //elm.floors = elm2.floor + " " + elm.floors
-                        elm.floors = " <a class='badge badges badge-pill badge-info'>" + elm2.floor + elm.floors + "</a>"
+                        i++;
                     }
                 })
                 //elm.job = elm.job + "(" + coutOfSelectedFloors + ")"
                 elm.job = elm.job + " <span class='badge badges badge-pill badge-info'> " + coutOfSelectedFloors + "</span>"
-
+                elm.floors = temp;
             })
-
+            console.log("hiiii", groupedByJob)
 
             $('#SelectedGlazingReport').DataTable({
                 "responsive": true,
@@ -499,7 +504,7 @@
 
             var out4 = { allofthejobtables_: out3 }
 
-            //var test = doAjax(JSON.stringify(out4))
+            doAjax(JSON.stringify(out4))
 
         }
 

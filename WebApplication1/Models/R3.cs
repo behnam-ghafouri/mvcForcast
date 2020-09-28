@@ -10,12 +10,12 @@ namespace WebApplication1.Models
         public int totalofthistype { get; set; }
         public List<JobFloor> jobfloors_ { get; set; }
 
-        public R3(List<JobAndZ_Job> input, Style styleobject)
+        public R3(List<Job> input, Style styleobject)
         {
             this.jobfloors_ = new List<JobFloor>();
             this.totalofthistype = 0;
 
-            foreach (JobAndZ_Job jobAndz_job in input)
+            foreach (Job jobAndz_job in input)
             {
                 //one job starts here
                 // i need to take uniqe floors for one jobe

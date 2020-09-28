@@ -148,6 +148,7 @@
     <Compile Include="Models\StylesForSendToFront1.cs" />
     <Compile Include="Models\StylesForSendToFront2.cs" />
     <Compile Include="Models\SwingDoor.cs" />
+    <Compile Include="Models\Z_jobsTable.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

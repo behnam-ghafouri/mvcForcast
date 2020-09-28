@@ -38,9 +38,19 @@
             $("#LoadingImage").hide();
             mainfunction()
             toggle()
-       
+      
         });
+        function masterSearch() {
+       
+            $('.dataTables_filter').hide();
+           
+            $('.masterSearch').on('keyup', function () {
+                //Draw the table again afaccordingly after getting the string in the input
+                $('#GlazingReport').DataTable().search(this.value).draw();
+                $('#SelectedGlazingReport').DataTable().search(this.value).draw();
 
+            });
+        }
         function toggle() {
             $('.btn-toggle').click(function () {
                 $(this).find('.btn').toggleClass('active');
@@ -56,41 +66,48 @@
 
         //main function of the program
         async function mainfunction() {
-            ServerData = $("#customInput").data("value");       
-           
+            ServerData = $("#customInput").data("value");
+
             var temp = [];
             ServerData.allofthejobtables_.forEach(elm => {
-               
+
                 elm.jobdetail_.forEach(elm2 => {
-                    
-                    temp.push({job:elm.jobname_,floor:elm2.floor,tag:elm2.tag,style:elm2.style})
-                    
+
+                    temp.push({ job: elm.jobname_, floor: elm2.floor, tag: elm2.tag, style: elm2.style })
+
                 })
             })
             ServerData = temp;
             drawTable(ServerData)
-            
+            masterSearch();
+
         }
 
 
         //doing the ajax
         async function doAjax(input) {
             $("#LoadingImage").show();
-            
+
 
             $.ajax({
                 async: "true",
                 type: "POST",
                 url: "/Forecast/RcvJobs",
-                data: JSON.stringify({ jobquery: input , stylesWeLookFor: "this", reportname: "and this " }),
+                data: JSON.stringify({ jobquery: input, stylesWeLookFor: "this", reportname: "and this " }),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json",
-           
+
                 success: function (response) {
                     $("#LoadingImage").hide();
 
-                    console.log("ajax responded! ", response)           
+                    console.log("ajax responded! ", response)
+          
+                   
 
+                    setTimeout(() => {
+                        //Add a class
+                        $('.dataTables_filter input').addClass('masterSearch')
+                    }, 30)
 
                 },
                 failure: function (response) {
@@ -101,7 +118,7 @@
                 }
             });
 
-           
+
         }
 
         //inside the RcvedJobs we have job floor and tags but for showing them to user we have to group them just by job  ==> not floor not tag
@@ -144,11 +161,11 @@
             function compare(in1, in2) {
                 if (in1.floor.toUpperCase() > in2.floor.toUpperCase()) return 1;
                 if (in1.floor.toUpperCase() < in2.floor.toUpperCase()) return -1;
-                               
+
             }
             output.sort(compare);
 
-            
+
             return output;
         }
 
@@ -165,7 +182,7 @@
                     }
                 })
                 if (flag) {
-                    output.push({job: elm.job, checked: "" });
+                    output.push({ job: elm.job, checked: "" });
                 }
             })
             return output;
@@ -175,14 +192,14 @@
 
             AllEverySingleCheckBox = getUniqDataForAllJobFloor(input)
             AllEverySingleCheckBoxForSelectAll = getUniqDataForAllJobs(input)
-            
+
 
             //console.log(prepedReturnArr)
 
             $('#GlazingReport').DataTable({
                 "destroy": true,
                 select: "single",
-                "searching": false,
+                "searching": true,
                 "paging": false,
                 "info": false,
                 "scrollY": "645px",
@@ -209,7 +226,7 @@
                 var tdi = tr.find("i.fa");
                 var row = $('#GlazingReport').DataTable().row(tr);
 
-                
+
 
                 if (row.child.isShown()) {
                     // This row is already open - close it
@@ -237,13 +254,13 @@
             var Internall = [];
             var temp;
             AllEverySingleCheckBoxForSelectAll.forEach(elm => {
-                if (elm.job == d.job) {                    
+                if (elm.job == d.job) {
                     temp = '<table style="border: 2px solid lightgray;" class="table table-hover nowrap innerTable" ><thead class="table-info" style="text-align: center;"><tr><th>Floors</th><th><div class="custom-control custom-checkbox custom-control-inline"><input   onclick="selectall(this)"   value="' + d.job + '" type="checkbox" class="custom-control-input" id="' + d.job + '"  ' + elm.checked + '><label class="custom-control-label" for="' + d.job + '" >Select all</label></div></th></tr></thead> <tbody>';
                 }
             })
             //`d` is the original data object for the row
             //var temp = '<table style="border: 2px solid lightgray;" class="table table-hover nowrap" ><thead class="table-info" style="text-align: center;"><tr><th>Floors</th><th><input onclick="selectall(this)"  class="checkbox" value="' + d.job + '" type="checkbox" >Select all</th></tr></thead> <tbody>	';
-            
+
             AllEverySingleCheckBox.forEach(elm => {
                 if (elm.job == d.job) {
                     temp = temp + '<tr><td style="text-align: center;" >' + elm.floor + '</td><td class="c " style="text-align: center;"><input onclick="selectsingle(this)"  class="' + elm.job + ' singleCheck" value=' + JSON.stringify(elm) + ' type="checkbox" ' + elm.checked + '></td></tr>'
@@ -255,7 +272,7 @@
 
         //check or uncheck the "select all" all floors for one job
         function selectall(input) {
-            //changes it own property in the global variable 
+            //changes it own property in the global variable
             AllEverySingleCheckBoxForSelectAll.forEach(elm => {
                 if (elm.job == input.value) {
                     if (input.checked == true) {
@@ -266,7 +283,7 @@
                     }
                 }
             })
-            //changes all the chech boxes for floors on that job to checked or uncheked 
+            //changes all the chech boxes for floors on that job to checked or uncheked
             for (item of document.getElementsByClassName(input.value)) {
                 if (input.checked == true) {
                     item.checked = true;
@@ -276,7 +293,7 @@
                 }
             }
 
-            //changing the status of the global variable AllEverySingleCheckBox 
+            //changing the status of the global variable AllEverySingleCheckBox
             AllEverySingleCheckBox.forEach(elm => {
                 if (elm.job == input.value) {
                     if (input.checked == true) {
@@ -293,10 +310,10 @@
 
         //if user clicks on every single floor it loops throw prepedReturnArr and changes the status of the checked property
         function selectsingle(input) {
-            
+
             var temp = JSON.parse(input.value);
 
-            //change the status for that single item AllEverySingleCheckBox 
+            //change the status for that single item AllEverySingleCheckBox
             AllEverySingleCheckBox.forEach(elm => {
                 if (elm.job == temp.job && elm.floor == temp.floor) {
                     if (input.checked == false) {
@@ -311,11 +328,11 @@
             //checking to see if there is need to change the status of the select all checkbox
 
             //when user unchecks one box we have to make sure select all is uncheked
-            if (input.checked == false) {                
-                var selectallcheckbox =  document.getElementById(temp.job)
+            if (input.checked == false) {
+                var selectallcheckbox = document.getElementById(temp.job)
                 //if is extra condition check when user uncheks something for sure we have to uncheck select all
                 if (selectallcheckbox.checked) {
-                    selectallcheckbox.checked = false                    
+                    selectallcheckbox.checked = false
                 }
                 //chanding the status of that select all check box in the global variable
                 AllEverySingleCheckBoxForSelectAll.forEach(elm => {
@@ -325,7 +342,7 @@
                 })
             }
 
-         
+
             //when user chekces select box if all the others are selected we have to check select all
             if (input.checked == true) {
                 var flag = true
@@ -335,7 +352,7 @@
                     if (!item.checked) {
                         flag = false
                     }
-                    
+
                 }
 
                 //flag will be true if all of the other boxes are true then it checks the select all aswell
@@ -351,36 +368,36 @@
 
 
                 }
-                
-            }   
+
+            }
 
             updateUserView();
         }
 
         //this function shows selected job(floorssss,)
-        function updateUserView() {            
+        function updateUserView() {
             var selectedJobFloorsToShow = [];
             var groupedByJob = [];
 
             AllEverySingleCheckBox.forEach(elm => {
                 if (elm.checked == "checked") {
                     selectedJobFloorsToShow.push(elm)
-                }                
+                }
             })
-            
+
             selectedJobFloorsToShow.forEach(elm => {
                 var flag = true;
 
                 groupedByJob.forEach(elm2 => {
-                    if (elm.job == elm2.job) {flag=false}
+                    if (elm.job == elm2.job) { flag = false }
                 })
 
-                if (flag) { groupedByJob.push({job:elm.job,floors:""})}
+                if (flag) { groupedByJob.push({ job: elm.job, floors: "" }) }
             })
 
 
             var i = 0;
-            
+
             groupedByJob.forEach(elm => {
                 var coutOfSelectedFloors = 0;
                 selectedJobFloorsToShow.forEach(elm2 => {
@@ -389,40 +406,41 @@
                         i++;
                         if (i == 5) {
                             i = 0;
-                           // elm.floors = elm2.floor + ",<br>" + elm.floors
-                            elm.floors = " <a class='badge badges badge-pill badge-info'>" + elm2.floor + "</a>" + "<br>" +" <a class='badge badges badge-pill badge-info'>" + elm.floors + "</a>" 
+                            // elm.floors = elm2.floor + ",<br>" + elm.floors
+                            elm.floors = " <a class='badge badges badge-pill badge-info'>" + elm2.floor + "</a>" + "<br>" + " <a class='badge badges badge-pill badge-info'>" + elm.floors + "</a>"
 
                         }
                         //elm.floors = elm2.floor + " " + elm.floors
-                        elm.floors = " <a class='badge badges badge-pill badge-info'>" + elm2.floor +  elm.floors+"</a>" 
+                        elm.floors = " <a class='badge badges badge-pill badge-info'>" + elm2.floor + elm.floors + "</a>"
                     }
                 })
                 //elm.job = elm.job + "(" + coutOfSelectedFloors + ")"
-                elm.job = elm.job +" <span class='badge badges badge-pill badge-info'> "+ coutOfSelectedFloors +"</span>"
+                elm.job = elm.job + " <span class='badge badges badge-pill badge-info'> " + coutOfSelectedFloors + "</span>"
 
             })
 
-            
+
             $('#SelectedGlazingReport').DataTable({
                 "responsive": true,
                 "destroy": true,
                 "data": groupedByJob,
-                "searching": false,
+                "searching": true,
                 "paging": false,
                 "info": false,
                 //"scrollY": "645px",
-               // "scrollCollapse": true,
+                // "scrollCollapse": true,
                 "columns": [
-                  
+
                     { "data": "job" },
                     { "data": "floors" }
 
                 ],
-                
+
                 "order": [[0, 'asc']]
             });
 
             $('#SelectedGlazingReport').DataTable().draw();
+            $('.dataTables_filter').hide();
 
         }
 
@@ -433,18 +451,18 @@
             var out = [];
             input_ = input_.filter(elm => { return elm.checked != "" });
 
-                    
-                      
+
+
             input_.forEach(elm => {
 
                 ServerData.forEach(elm2 => {
                     if (elm.job == elm2.job && elm.floor == elm2.floor) {
                         out.push(elm2);
                     }
-             
+
                 })
             })
-            
+
             //prepare model to send backend starts here
 
             var out2 = []
@@ -456,33 +474,33 @@
 
                 out2.forEach(elm2 => {
                     if (elm.job == elm2.job) {
-                        flag = false; 
-                    }                     
+                        flag = false;
+                    }
                 })
 
                 if (flag) {
-                    out2.push({ job: elm.job})
+                    out2.push({ job: elm.job })
                 }
             })
 
             //saving detail in model for every job
             //out2 containes the unique jobs from the user selected
-            
+
             var out3 = []
             out2.forEach(elm => {
                 var detail = []
                 out.forEach(elm2 => {
                     if (elm.job == elm2.job) {
-                        detail.push({floor: elm2.floor, tag: elm2.tag, style: elm2.style})
+                        detail.push({ floor: elm2.floor, tag: elm2.tag, style: elm2.style })
                     }
                 })
                 out3.push({ jobname_: elm.job, jobdetail_: detail })
             })
-            
-            var out4 = { allofthejobtables_:out3}
+
+            var out4 = { allofthejobtables_: out3 }
 
             //var test = doAjax(JSON.stringify(out4))
-           
+
         }
 
     </script>
@@ -676,41 +694,55 @@
         </div>
     </div>
     <!--END Loading Image-->
-    <section class="show_tables">
-    <div class="container">
-        <div class="row row-no-gutters">
-            <div class="col-lg-6">
-                <table id="GlazingReport" class="table table-hover table-bordered " style="border: solid 2px lightgray;text-align: center; ">
-                    <thead class="table-info" style="text-align: center;">
-                        <tr>
-                            <th class="selectall">#</th>
-                            <th>Job</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-            <div class="col-lg-6">
-                <table id="SelectedGlazingReport" class="table table-hover table-bordered " style="border: solid 2px lightgray;text-align: center; ">
-                    <thead class="table-info" style="text-align: center;">
-                        <tr>
-                            <th>Selected Jobs(Count)</th>
-                            <th>Selected Floors</th>
-
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-
+    <!--Search Input-->
+    <section class="search">
+        <div class="container">
+            <div class="searchJobs" style="display:flex;justify-content:center;">
+                <div class="input-group" style="width:50%;margin: 5px;">
+                    <span style='margin: 5px;font-size: 20px;'>
+                        <i class="fa fa-search" aria-hidden="true"></i>
+                    </span>
+                    <input type="text" class="masterSearch form-control" style='border-radius: 0px;' placeholder="Search Job...." />
+                </div>
             </div>
         </div>
-    </div>
+    </section>
+    <!--END Search Input-->
+    <section class="show_tables">
+        <div class="container">
+            <div class="row row-no-gutters">
+                <div class="col-lg-6">
+                    <table id="GlazingReport" class="table table-hover table-bordered " style="border: solid 2px lightgray;text-align: center; ">
+                        <thead class="table-info" style="text-align: center;">
+                            <tr>
+                                <th class="selectall">#</th>
+                                <th>Job</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-lg-6">
+                    <table id="SelectedGlazingReport" class="table table-hover table-bordered " style="border: solid 2px lightgray;text-align: center; ">
+                        <thead class="table-info" style="text-align: center;">
+                            <tr>
+                                <th>Selected Jobs(Count)</th>
+                                <th>Selected Floors</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
 
     </section>
     <div class="container-fluid">
-         <input type="hidden" id="customInput" data-value="@JsonConvert.SerializeObject(Model)" />
+        <input type="hidden" id="customInput" data-value="@JsonConvert.SerializeObject(Model)" />
     </div>
 
 </body>

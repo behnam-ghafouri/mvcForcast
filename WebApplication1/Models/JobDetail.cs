@@ -11,6 +11,17 @@ namespace WebApplication1.Models
         public string tag { get; set; }
         public string style { get; set; }
 
+        public JobDetail()
+        {
+
+        }
+        public JobDetail(string f,string t,string s)
+        {
+            this.floor = f;
+            this.tag = t;
+            this.style = s;
+
+        }
     }
 }
 

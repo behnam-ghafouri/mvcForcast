@@ -9,64 +9,54 @@ namespace WebApplication1.Models
     {
         public int totalofthistype { get; set; }
         public List<JobFloor> jobfloors_ { get; set; }
-
-
-
         public Awningmetra(List<Job> input, Style styleobject)
         {
-
-
             this.jobfloors_ = new List<JobFloor>();
             this.totalofthistype = 0;
 
-            foreach (Job jobAndz_job in input)
+            foreach (Job job_ in input)
             {
-                //one job starts here
-                // i need to take uniqe floors for one jobe
-                List<string> floors_ = new List<string>();
+                Dictionary<string, List<JobDetail>> evryFloorTags = new Dictionary<string, List<JobDetail>>();
 
-                foreach (JobDetail row in jobAndz_job.jobdetail_)
+                foreach (JobDetail row in job_.jobdetail_)
                 {
-                    bool flag = true;
-                    foreach (string elm in floors_)
+                    if (evryFloorTags.ContainsKey(row.floor))
                     {
-                        if (row.floor == elm) { flag = false; }
+                        evryFloorTags[row.floor].Add(row);
                     }
-                    if (flag) { floors_.Add(row.floor); }
+                    else
+                    {
+                        List<JobDetail> temp = new List<JobDetail>();
+                        temp.Add(new JobDetail(row.floor, row.tag, row.style));
+                        evryFloorTags.Add(row.floor, temp);
+                    }
                 }
 
-                foreach (string onefloor in floors_)
+                foreach (string FLR in evryFloorTags.Keys)
                 {
+                    //save all the tags for one floor in list 
+                    List<JobDetail> targetFloor = evryFloorTags[FLR];
                     int temp = 0;
-
-                    foreach (JobDetail jobdetail in jobAndz_job.jobdetail_)
+                    //checking all of tags for current floor 
+                    foreach (JobDetail onetag in targetFloor)
                     {
-                        if (onefloor == jobdetail.floor)
+                        //checks if style for the current tag exists 
+                        if (styleobject.style_.ContainsKey(onetag.style))
                         {
-                            //job detail for one especific floor we start counting
-                            foreach (StyleDetail onestyle in styleobject.styletable_)
+                            //check to see if the current tag has any swingdoor in it
+                            if (styleobject.style_[onetag.style].awning_ != 0 && job_.AwnStyle_ == "Metra")
                             {
-
-                                if (onestyle.name_ == jobdetail.style)
-                                {
-                                    if (onestyle.awning_ != 0 && jobAndz_job.AwnStyle_ == "Metra")
-                                    {
-                                        temp++;
-
-                                    }
-                                }
-
+                                temp++;
                             }
                         }
-
                     }
+                    //saving the results and going to next floor for current job 
                     if (temp != 0)
                     {
-                        this.jobfloors_.Add(new JobFloor(jobAndz_job.jobname_, onefloor, temp));
+                        this.jobfloors_.Add(new JobFloor(job_.jobname_, FLR, temp));
                         this.totalofthistype = this.totalofthistype + temp;
                     }
                 }
-
             }
         }
     }

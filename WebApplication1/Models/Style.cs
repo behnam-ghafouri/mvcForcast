@@ -8,11 +8,17 @@ namespace WebApplication1.Models
 {
     public class Style
     {
+        
         public List<StyleDetail> styletable_ { get; set; }       
-
+        
+        //this part added for using dictionary 
+        public SortedDictionary<string,StyleDetail> style_;
         public Style() {
-
+            //this part added for using dictionary 
             this.styletable_ = new List<StyleDetail>();
+            
+            this.style_ = new SortedDictionary<string, StyleDetail>();
+
             string str_SQL = "SELECT name,O1,O2,O3,O4,O5,O6,O7,O8 FROM styles ";
             OleDbConnection connection = new OleDbConnection(Conection.getConectionString());
 
@@ -38,6 +44,14 @@ namespace WebApplication1.Models
                         temp.projectpanel_ = stylecounter(reader, "FP");
 
                         styletable_.Add(temp);
+
+                        //this part added for using dictionary 
+                        if (!this.style_.ContainsKey(temp.name_))
+                        {
+                            this.style_.Add(temp.name_, temp);
+                        }
+
+
                     }               
                 }
             }
@@ -48,6 +62,9 @@ namespace WebApplication1.Models
             finally {
                 connection.Close();
             }
+
+            
+
         }
 
 

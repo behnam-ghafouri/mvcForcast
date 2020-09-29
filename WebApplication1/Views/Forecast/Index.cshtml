@@ -38,8 +38,22 @@
             $("#LoadingImage").hide();
             mainfunction()
             toggle()
+            getStylesCheckbox()
       
         });
+        function getStylesCheckbox() {
+            $('input[name=checkbox]').click(function () {
+                if (this.id == "watch-me") {
+                    $("#show-me").show('slow');
+                    $("#show-me2").hide('slow');
+
+                } else {
+                    $("#show-me").hide('slow');
+                    $("#show-me2").show('slow');
+
+                }
+            });
+        }
         function masterSearch() {
        
             $('.dataTables_filter').hide();
@@ -82,7 +96,6 @@
             masterSearch();
 
         }
-
 
         //doing the ajax
         async function doAjax(input) {
@@ -628,6 +641,7 @@
         section{
             padding:20px;
         }
+
     </style>
 
 </head>
@@ -646,50 +660,56 @@
             </ul>
         </nav>
     </div>
-
-
-
-
     <div id="pageHeader" class="container"><h2 class="heading">Forecast Status</h2></div>
-    @*<div class="container toolbar">
-            <div class="custom-control custom-checkbox custom-control-inline">
-                <input type="checkbox" class="custom-control-input" id="awning">
-                <label class="custom-control-label" for="awning">Awning</label>
-            </div>
-            <div class="custom-control custom-checkbox custom-control-inline">
-                <input type="checkbox" class="custom-control-input" id="door">
-                <label class="custom-control-label" for="door">Door</label>
-            </div>
-            <div class="custom-control custom-checkbox custom-control-inline">
-                <input type="checkbox" class="custom-control-input" id="shift">
-                <label class="custom-control-label" for="shift">Shift</label>
-            </div>
-            <div class="custom-control custom-checkbox custom-control-inline">
-                <input type="checkbox" class="custom-control-input" id="r3">
-                <label class="custom-control-label" for="r3">R3</label>
-            </div>
-            <div class="custom-control custom-checkbox custom-control-inline">
-                <input type="checkbox" class="custom-control-input" id="spandrel">
-                <label class="custom-control-label" for="spandrel">Spandrel</label>
-            </div>
-            <div class="custom-control custom-checkbox custom-control-inline">
-                <input type="checkbox" class="custom-control-input" id="shadowbox">
-                <label class="custom-control-label" for="shadowbox">Shadowbox</label>
-            </div>
-
-            <button class="btn btn-sm btn-outline-info pull-right" onclick="search()"><i class="fa fa-search"></i>&nbsp;Search</button>
-        </div>*@
+   
 
 
     <div class="container toolbar" style="display:flex;justify-content:space-around;">
-        <div class="toggle-container toolbarButton">
+        <div class="toggle-container">
             <div class="btn-group btn-toggle">
+                <input id='watch-me' name='checkbox' type='radio' style=" margin: 10px;"/>
                 <button class="btn btn-md  btn-outline-info active" id="awningDoor"> Awning & Door Forecast</button>
+                <input name='checkbox' type='radio'  style=" margin: 10px;"/>
                 <button class="btn btn-md " id="infill">Infill Forecast</button>
+                
             </div>
+            <div style="padding:20px;">
+                <div id='show-me' style='display:none'>
+                    <div class="custom-control custom-checkbox custom-control-inline">
+                        <input type="checkbox" class="custom-control-input" id="awning">
+                        <label class="custom-control-label" for="awning">Awning</label>
+                    </div>
+                    <div class="custom-control custom-checkbox custom-control-inline">
+                        <input type="checkbox" class="custom-control-input" id="door">
+                        <label class="custom-control-label" for="door">Door</label>
+                    </div>
 
+                </div>
+                <div id='show-me2' style='display:none'>
+                    <div class="custom-control custom-checkbox custom-control-inline">
+                        <input type="checkbox" class="custom-control-input" id="shift">
+                        <label class="custom-control-label" for="shift">Shift</label>
+                    </div>
+                    <div class="custom-control custom-checkbox custom-control-inline">
+                        <input type="checkbox" class="custom-control-input" id="r3">
+                        <label class="custom-control-label" for="r3">R3</label>
+                    </div>
+                    <div class="custom-control custom-checkbox custom-control-inline">
+                        <input type="checkbox" class="custom-control-input" id="spandrel">
+                        <label class="custom-control-label" for="spandrel">Spandrel</label>
+                    </div>
+                    <div class="custom-control custom-checkbox custom-control-inline">
+                        <input type="checkbox" class="custom-control-input" id="shadowbox">
+                        <label class="custom-control-label" for="shadowbox">Shadowbox</label>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="searchButton"><button class="btn btn-md btn-outline-info pull-right" onclick="search()"><i class="fa fa-search"></i>&nbsp;Search</button></div>
+        <div class="searchButton"><button class="btn btn-md btn-outline-info pull-right" onclick="search()">&nbsp;Submit</button></div>
+        
+        <div>
+  
+        </div>
     </div>
 
     <!--Loading Image-->

@@ -34,6 +34,7 @@
         var AllEverySingleCheckBox = [];
         var AllEverySingleCheckBoxForSelectAll = [];
         var UserViewTable = null;
+        var dataForAwnigAndDoors = "";
         $(document).ready(function () {
             $("#LoadingImage").hide();
             mainfunction()
@@ -560,8 +561,10 @@
 
          //drawing the  Awning and Door Forecast report results
             function drawAwningAndDoorForecast(input) {
-                console.log(input)
+
+                dataForAwnigAndDoors = input;
                 var test23 = [{ style: "swingdoor_", qty: input.swingdoor_.totalofthistype }, { style: "awningall_", qty: input.awningall_.totalofthistype }];
+                //main data table that is showing awnigall and swing doors
                 $('#drawAwningAndDoorForecastTable').DataTable({
                     "destroy": true,
                     select: "single",
@@ -604,7 +607,7 @@
                     }
                     else {
                         // Open this row
-                        row.child(netsedForecat(row.data())).show();
+                        row.child(netsedForecat(row.data()), input).show();
                         tr.addClass('shown');
                         tdi.first().removeClass('fa-plus-square');
                         tdi.first().addClass('fa-minus-square');
@@ -615,83 +618,77 @@
                 $('#drawAwningAndDoorForecastTable').DataTable().rows.add(test23).draw();
 
 
-                //start first nested table
-                
-
-                var test23 = [{ style: "awningf92_", qty: input.awningf92_.totalofthistype }, { style: "awningm90_", qty: input.awningm90_.totalofthistype }, { style: "awningmetra_", qty: input.awningmetra_.totalofthistype }, { style: "awningquest_", qty: input.awningquest_.totalofthistype }];
-
-                $('#awningall_').DataTable({
-                    "destroy": true,
-                    select: "single",
-                    "searching": false,
-                    "paging": false,
-                    "info": false,
-                    "scrollY": "645px",
-                    "scrollCollapse": true,
-                    "columns": [
-                        {
-                            "className": 'details-control',
-                            "orderable": false,
-                            "data": null,
-                            "defaultContent": '',
-                        },
-                        { "data": "style" },
-                        { "data": "qty" }
-                    ],
-                    "columnDefs": [
-                        { width: 100, targets: 0 }
-                    ],
-                    "order": [[1, 'asc']]
-                });
-                $('#awningall_').DataTable().draw();
-
-                ////click on data tabel row
-                //$('#awningall_ tbody').on('click', 'td.details-control', function () {
-                //    var tr = $(this).closest('tr');
-                //    var tdi = tr.find("i.fa");
-                //    var row = $('#awningall_').DataTable().row(tr);
-
-
-
-                //    if (row.child.isShown()) {
-                //        // This row is already open - close it
-                //        row.child.hide();
-                //        tr.removeClass('shown');
-                //        tdi.first().removeClass('fa-minus-square');
-                //        tdi.first().addClass('fa-plus-square');
-                //    }
-                //    else {
-                //        // Open this row
-                //        row.child(netsedForecat(row.data())).show();
-                //        tr.addClass('shown');
-                //        tdi.first().removeClass('fa-plus-square');
-                //        tdi.first().addClass('fa-minus-square');
-                //    }
-                //});
-
-                $('#awningall_').DataTable().clear();
-                $('#awningall_').DataTable().rows.add(test23).draw();
-
-
-
-
-
-
-
-
-
+         
 
             }
+
             //for responsive table for awnings report
-            function netsedForecat(input) {
+        function netsedForecat(input) {
 
+            var table = `<table  class="table table-hover table-bordered " style="border: solid 2px lightgray;text-align: center; ">
+                    <thead class="table-info" style="text-align: center;">
+                        <tr>
+                            <th>expand</th>
+                            <th>AwningType</th>
+                            <th>qty</th>
+                        </tr>
+                    </thead>
+                    <tbody> 
+                        <tr class="12345">
+                            <th onclick="expand(12345)">expand</th>
+                            <th>awningf92_</th>
+                            <th>`+ dataForAwnigAndDoors.awningf92_.totalofthistype+`</th>
+                        </tr>
 
-                console.log(document.getElementsByClassName(input.style)[0].innerHTML)
-                return '"' + document.getElementsByClassName(input.style)[0].innerHTML+'"'
-                      
-                
-                
+                        <tr>
+                            <th onclick="expand(this)">expand</th>
+                            <th>awningm90_</th>
+                            <th>`+ dataForAwnigAndDoors.awningm90_.totalofthistype +`</th>
+                        </tr>
+                        <tr>
+                            <th onclick="expand(this)">expand</th>
+                            <th>awningmetra_</th>
+                            <th>`+ dataForAwnigAndDoors.awningmetra_.totalofthistype +`</th>
+                        </tr>
+                        <tr>
+                            <th onclick="expand(this)">expand</th>
+                            <th>awningquest_</th>
+                            <th>`+ dataForAwnigAndDoors.awningquest_.totalofthistype +`</th>
+                        </tr>
+                    
+                           
+                    </tbody>
+                </table>`
+
+                console.log(dataForAwnigAndDoors)    
+
+                return table
+                    
             }
+
+        function expand(input) {
+            console.log(document.querySelectorAll(".12345"))
+
+            var el = document.createElement("tr");
+            el.innerHTML = `<table class="table table-hover table-bordered " style="border: solid 2px lightgray;text-align: center; ">
+            <thead class="table-info" style="text-align: center;">
+                <tr>
+                <td>job</td>
+                <td>floor</td>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+            </table>`
+            var div = document.getElementById("12345");
+            insertAfter(div, el);
+
+            
+        }
+        // do not touch it
+        function insertAfter(referenceNode, newNode) {
+            referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+        }
     </script>
 
     <style>
@@ -936,28 +933,15 @@
         <table id="drawAwningAndDoorForecastTable" class="table table-hover table-bordered " style="border: solid 2px lightgray;text-align: center; ">
             <thead class="table-info" style="text-align: center;">
                 <tr>
-                    <th class="selectall">#</th>
-                    <th>style</th>
-                    <th>qty</th>
+                
                 </tr>
             </thead>
             <tbody>
             </tbody>
         </table>
-        <div  class="awningall_" style="display:none; ">
-            <table id="awningall_" class="table table-hover table-bordered " style="border: solid 2px lightgray;text-align: center;">
-                <thead class="table-info" style="text-align: center;">
-                    <tr>
-                        <th class="selectall">#</th>
-                        <th>style</th>
-                        <th>qty</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
 
+        
+         
 
     </section>
     <div class="container-fluid">

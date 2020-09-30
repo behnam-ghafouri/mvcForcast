@@ -38,22 +38,11 @@
             $("#LoadingImage").hide();
             mainfunction()
             toggle()
-            getStylesCheckbox()
+            
       
         });
-        function getStylesCheckbox() {
-            $('input[name=checkbox]').click(function () {
-                if (this.id == "watch-me") {
-                    $("#show-me").show('slow');
-                    $("#show-me2").hide('slow');
-
-                } else {
-                    $("#show-me").hide('slow');
-                    $("#show-me2").show('slow');
-
-                }
-            });
-        }
+        
+    
         function masterSearch() {
        
             $('.dataTables_filter').hide();
@@ -73,6 +62,16 @@
                         $('.heading').text(function (i, v) {
                             return v === 'Infill Forecast Report' ? 'Swing Door/ Awning Forecast Report' : 'Infill Forecast Report'
                         })
+                    if ($('.heading').text() == 'Infill Forecast Report') {
+                        $("#awningDoorCheckbox").hide('slow');
+                        $("#infillCheckbox").show('slow');
+
+
+
+                    } else {
+                        $("#awningDoorCheckbox").show('slow');
+                        $("#infillCheckbox").hide('slow');
+                    }
                 }
 
             });
@@ -98,38 +97,41 @@
         }
 
         //doing the ajax
-        async function doAjax(input) {
-            $("#LoadingImage").show();
+        async function doAjax(input, reportname_, stylesWeLookFor_) {
+            return new Promise((resolve, reject) => {
+                $("#LoadingImage").show();
+                $.ajax({
+                    async: "true",
+                    type: "POST",
+                    url: "/Forecast/RcvJobs",
+                    data: JSON.stringify({ jobquery: input, stylesWeLookFor: stylesWeLookFor_, reportname: reportname_ }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+
+                    success: function (response) {
+                        $("#LoadingImage").hide();
+
+                        resolve(response);
 
 
-            $.ajax({
-                async: "true",
-                type: "POST",
-                url: "/Forecast/RcvJobs",
-                data: JSON.stringify({ jobquery: input, stylesWeLookFor: "this", reportname: "and this " }),
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
+                        setTimeout(() => {
+                            //Add a class
+                            $('.dataTables_filter input').addClass('masterSearch')
+                        }, 30)
 
-                success: function (response) {
-                    $("#LoadingImage").hide();
-
-                    console.log("ajax responded! ", response)
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            })
+            
+            
           
-                   
 
-                    setTimeout(() => {
-                        //Add a class
-                        $('.dataTables_filter input').addClass('masterSearch')
-                    }, 30)
-
-                },
-                failure: function (response) {
-                    alert(response.responseText);
-                },
-                error: function (response) {
-                    alert(response.responseText);
-                }
-            });
 
 
         }
@@ -250,7 +252,7 @@
                 }
                 else {
                     // Open this row
-                    row.child(format(row.data())).show();
+                    row.child(format(row.data(), input)).show();
                     tr.addClass('shown');
                     tdi.first().removeClass('fa-plus-square');
                     tdi.first().addClass('fa-minus-square');
@@ -517,10 +519,179 @@
 
             var out4 = { allofthejobtables_: out3 }
 
-            doAjax(JSON.stringify(out4))
+            var reportname_ = "";
+            var stylesWeLookFor_ = [];
+            var flagforselectingthereport = null;
+            var result = null;
+            reportname_ = document.getElementsByClassName("active")[0].innerHTML;
+           
+            if (reportname_.includes("Awning and Door Forecast")) {
+                flagforselectingthereport = true;
+                document.querySelectorAll(".useroptionaw").forEach(elm => {
+                    if (elm.control.checked == true) {
+                        stylesWeLookFor_.push(elm.innerHTML)
+                    }
+                })
+            }
+            else if (reportname_.includes("Infill Forecast")) {
+                flagforselectingthereport = false;
+                document.querySelectorAll(".useroptionin").forEach(elm => {
+                    if (elm.control.checked == true) {
+                        stylesWeLookFor_.push(elm.innerHTML)
+                    }
+                })
+            }
 
+            
+            if (stylesWeLookFor_.length == 0) {
+                //show modal and ask user to select style at least on
+                alert("for the " + reportname_ + "select minimum one style");
+            } else {
+                result = await doAjax(JSON.stringify(out4), reportname_, stylesWeLookFor_)
+                if (flagforselectingthereport) {
+                    //call function to draw the first report 
+                    drawAwningAndDoorForecast(result)
+                } else if (!flagforselectingthereport) {
+                    //call function to draw secound report
+                }
+            }
+          
         }
 
+         //drawing the  Awning and Door Forecast report results
+            function drawAwningAndDoorForecast(input) {
+                console.log(input)
+                var test23 = [{ style: "swingdoor_", qty: input.swingdoor_.totalofthistype }, { style: "awningall_", qty: input.awningall_.totalofthistype }];
+                $('#drawAwningAndDoorForecastTable').DataTable({
+                    "destroy": true,
+                    select: "single",
+                    "searching": false,
+                    "paging": false,
+                    "info": false,
+                    "scrollY": "645px",
+                    "scrollCollapse": true,
+                    "columns": [
+                        {
+                            "className": 'details-control',
+                            "orderable": false,
+                            "data": null,
+                            "defaultContent": '',
+                        },
+                        { "data": "style" },
+                        { "data": "qty" }
+                    ],
+                    "columnDefs": [
+                        { width: 100, targets: 0 }
+                    ],
+                    "order": [[1, 'asc']]
+                });
+                $('#drawAwningAndDoorForecastTable').DataTable().draw();
+
+                //click on data tabel row
+                $('#drawAwningAndDoorForecastTable tbody').on('click', 'td.details-control', function () {
+                    var tr = $(this).closest('tr');
+                    var tdi = tr.find("i.fa");
+                    var row = $('#drawAwningAndDoorForecastTable').DataTable().row(tr);
+
+
+
+                    if (row.child.isShown()) {
+                        // This row is already open - close it
+                        row.child.hide();
+                        tr.removeClass('shown');
+                        tdi.first().removeClass('fa-minus-square');
+                        tdi.first().addClass('fa-plus-square');
+                    }
+                    else {
+                        // Open this row
+                        row.child(netsedForecat(row.data())).show();
+                        tr.addClass('shown');
+                        tdi.first().removeClass('fa-plus-square');
+                        tdi.first().addClass('fa-minus-square');
+                    }
+                });
+
+                $('#drawAwningAndDoorForecastTable').DataTable().clear();
+                $('#drawAwningAndDoorForecastTable').DataTable().rows.add(test23).draw();
+
+
+                //start first nested table
+                
+
+                var test23 = [{ style: "awningf92_", qty: input.awningf92_.totalofthistype }, { style: "awningm90_", qty: input.awningm90_.totalofthistype }, { style: "awningmetra_", qty: input.awningmetra_.totalofthistype }, { style: "awningquest_", qty: input.awningquest_.totalofthistype }];
+
+                $('#awningall_').DataTable({
+                    "destroy": true,
+                    select: "single",
+                    "searching": false,
+                    "paging": false,
+                    "info": false,
+                    "scrollY": "645px",
+                    "scrollCollapse": true,
+                    "columns": [
+                        {
+                            "className": 'details-control',
+                            "orderable": false,
+                            "data": null,
+                            "defaultContent": '',
+                        },
+                        { "data": "style" },
+                        { "data": "qty" }
+                    ],
+                    "columnDefs": [
+                        { width: 100, targets: 0 }
+                    ],
+                    "order": [[1, 'asc']]
+                });
+                $('#awningall_').DataTable().draw();
+
+                ////click on data tabel row
+                //$('#awningall_ tbody').on('click', 'td.details-control', function () {
+                //    var tr = $(this).closest('tr');
+                //    var tdi = tr.find("i.fa");
+                //    var row = $('#awningall_').DataTable().row(tr);
+
+
+
+                //    if (row.child.isShown()) {
+                //        // This row is already open - close it
+                //        row.child.hide();
+                //        tr.removeClass('shown');
+                //        tdi.first().removeClass('fa-minus-square');
+                //        tdi.first().addClass('fa-plus-square');
+                //    }
+                //    else {
+                //        // Open this row
+                //        row.child(netsedForecat(row.data())).show();
+                //        tr.addClass('shown');
+                //        tdi.first().removeClass('fa-plus-square');
+                //        tdi.first().addClass('fa-minus-square');
+                //    }
+                //});
+
+                $('#awningall_').DataTable().clear();
+                $('#awningall_').DataTable().rows.add(test23).draw();
+
+
+
+
+
+
+
+
+
+
+            }
+            //for responsive table for awnings report
+            function netsedForecat(input) {
+
+
+                console.log(document.getElementsByClassName(input.style)[0].innerHTML)
+                return '"' + document.getElementsByClassName(input.style)[0].innerHTML+'"'
+                      
+                
+                
+            }
     </script>
 
     <style>
@@ -667,40 +838,38 @@
     <div class="container toolbar" style="display:flex;justify-content:space-around;">
         <div class="toggle-container">
             <div class="btn-group btn-toggle">
-                <input id='watch-me' name='checkbox' type='radio' style=" margin: 10px;"/>
-                <button class="btn btn-md  btn-outline-info active" id="awningDoor"> Awning & Door Forecast</button>
-                <input name='checkbox' type='radio'  style=" margin: 10px;"/>
+                <button class="btn btn-md  btn-outline-info active" id="awningDoor">Awning and Door Forecast</button>
                 <button class="btn btn-md " id="infill">Infill Forecast</button>
                 
             </div>
             <div style="padding:20px;">
-                <div id='show-me' style='display:none'>
+                <div id='awningDoorCheckbox' style='display:block'>
                     <div class="custom-control custom-checkbox custom-control-inline">
                         <input type="checkbox" class="custom-control-input" id="awning">
-                        <label class="custom-control-label" for="awning">Awning</label>
+                        <label class="custom-control-label useroptionaw" for="awning">Awning</label>
                     </div>
                     <div class="custom-control custom-checkbox custom-control-inline">
                         <input type="checkbox" class="custom-control-input" id="door">
-                        <label class="custom-control-label" for="door">Door</label>
+                        <label class="custom-control-label useroptionaw" for="door">Door</label>
                     </div>
 
                 </div>
-                <div id='show-me2' style='display:none'>
+                <div id='infillCheckbox' style='display:none'>
                     <div class="custom-control custom-checkbox custom-control-inline">
                         <input type="checkbox" class="custom-control-input" id="shift">
-                        <label class="custom-control-label" for="shift">Shift</label>
+                        <label class="custom-control-label useroptionin" for="shift">Shift</label>
                     </div>
                     <div class="custom-control custom-checkbox custom-control-inline">
                         <input type="checkbox" class="custom-control-input" id="r3">
-                        <label class="custom-control-label" for="r3">R3</label>
+                        <label class="custom-control-label useroptionin" for="r3">R3</label>
                     </div>
                     <div class="custom-control custom-checkbox custom-control-inline">
                         <input type="checkbox" class="custom-control-input" id="spandrel">
-                        <label class="custom-control-label" for="spandrel">Spandrel</label>
+                        <label class="custom-control-label useroptionin" for="spandrel">Spandrel</label>
                     </div>
                     <div class="custom-control custom-checkbox custom-control-inline">
                         <input type="checkbox" class="custom-control-input" id="shadowbox">
-                        <label class="custom-control-label" for="shadowbox">Shadowbox</label>
+                        <label class="custom-control-label useroptionin" for="shadowbox">Shadowbox</label>
                     </div>
                 </div>
             </div>
@@ -764,6 +933,31 @@
                 </div>
             </div>
         </div>
+        <table id="drawAwningAndDoorForecastTable" class="table table-hover table-bordered " style="border: solid 2px lightgray;text-align: center; ">
+            <thead class="table-info" style="text-align: center;">
+                <tr>
+                    <th class="selectall">#</th>
+                    <th>style</th>
+                    <th>qty</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <div  class="awningall_" style="display:none; ">
+            <table id="awningall_" class="table table-hover table-bordered " style="border: solid 2px lightgray;text-align: center;">
+                <thead class="table-info" style="text-align: center;">
+                    <tr>
+                        <th class="selectall">#</th>
+                        <th>style</th>
+                        <th>qty</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
 
     </section>
     <div class="container-fluid">

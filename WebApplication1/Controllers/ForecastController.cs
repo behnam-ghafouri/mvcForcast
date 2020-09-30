@@ -8,7 +8,8 @@ using System.Data;
 using System.Web.Script.Serialization;
 using WebApplication1.Models;
 using System.Web.Optimization;
-
+using Microsoft.Ajax.Utilities;
+using Newtonsoft.Json;
 
 namespace WebApplication1.Controllers
 {
@@ -54,13 +55,15 @@ namespace WebApplication1.Controllers
                 StylesForSendToFront1 forecast1;
                 StylesForSendToFront2 forecast2;
 
-                if (reportname == "1" || true)
+                if (reportname == "Awning and Door Forecast")
                 {
                     //send the jobsWithR3AndAwningData to StylesForsendToFront1
                     forecast1 = new StylesForSendToFront1(jobsWithR3AndAwningData, stylesWeLookFor);
+                    //string outJ = JsonConvert.SerializeObject(forecast1);
                     return Json(forecast1);
                 }
-                else if(reportname == "2" && false){
+                else if(reportname == "Infill Forecast")
+                {
                     //send the jobsWithR3AndAwningData to StylesForsendToFront2
                     forecast2 = new StylesForSendToFront2(jobsWithR3AndAwningData, stylesWeLookFor);
                     return Json(forecast2);

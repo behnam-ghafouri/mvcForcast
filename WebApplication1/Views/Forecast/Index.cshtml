@@ -39,529 +39,528 @@
             $("#LoadingImage").hide();
             mainfunction()
             toggle()
-            
-      
+
         });
-        
-    
-        function masterSearch() {
-       
-            $('.dataTables_filter').hide();
-           
-            $('.masterSearch').on('keyup', function () {
-                //Draw the table again afaccordingly after getting the string in the input
-                $('#GlazingReport').DataTable().search(this.value).draw();
-                $('#SelectedGlazingReport').DataTable().search(this.value).draw();
-
-            });
-        }
-        function toggle() {
-            $('.btn-toggle').click(function () {
-                $(this).find('.btn').toggleClass('active');
-                if ($(this).find('.btn-outline-info').length > 0) {
-                    if ($(this).find('.btn').toggleClass('btn-outline-info'))
-                        $('.heading').text(function (i, v) {
-                            return v === 'Infill Forecast Report' ? 'Swing Door/ Awning Forecast Report' : 'Infill Forecast Report'
-                        })
-                    if ($('.heading').text() == 'Infill Forecast Report') {
-                        $("#awningDoorCheckbox").hide('slow');
-                        $("#infillCheckbox").show('slow');
 
 
+            function masterSearch() {
 
-                    } else {
-                        $("#awningDoorCheckbox").show('slow');
-                        $("#infillCheckbox").hide('slow');
+                $('.dataTables_filter').hide();
+
+                $('.masterSearch').on('keyup', function () {
+                    //Draw the table again afaccordingly after getting the string in the input
+                    $('#GlazingReport').DataTable().search(this.value).draw();
+                    $('#SelectedGlazingReport').DataTable().search(this.value).draw();
+
+                });
+            }
+            function toggle() {
+                $('.btn-toggle').click(function () {
+                    $(this).find('.btn').toggleClass('active');
+                    if ($(this).find('.btn-outline-info').length > 0) {
+                        if ($(this).find('.btn').toggleClass('btn-outline-info'))
+                            $('.heading').text(function (i, v) {
+                                return v === 'Infill Forecast Report' ? 'Swing Door/ Awning Forecast Report' : 'Infill Forecast Report'
+                            })
+                        if ($('.heading').text() == 'Infill Forecast Report') {
+                            $("#awningDoorCheckbox").hide('slow');
+                            $("#infillCheckbox").show('slow');
+
+
+
+                        } else {
+                            $("#awningDoorCheckbox").show('slow');
+                            $("#infillCheckbox").hide('slow');
+                        }
                     }
-                }
 
-            });
-        }
+                });
+            }
 
-        //main function of the program
-        async function mainfunction() {
-            ServerData = $("#customInput").data("value");
+            //main function of the program
+            async function mainfunction() {
+                ServerData = $("#customInput").data("value");
 
-            var temp = [];
-            ServerData.allofthejobtables_.forEach(elm => {
+                var temp = [];
+                ServerData.allofthejobtables_.forEach(elm => {
 
-                elm.jobdetail_.forEach(elm2 => {
+                    elm.jobdetail_.forEach(elm2 => {
 
-                    temp.push({ job: elm.jobname_, floor: elm2.floor, tag: elm2.tag, style: elm2.style })
+                        temp.push({ job: elm.jobname_, floor: elm2.floor, tag: elm2.tag, style: elm2.style })
 
+                    })
                 })
-            })
-            ServerData = temp;
-            drawTable(ServerData)
-            masterSearch();
+                ServerData = temp;
+                drawTable(ServerData)
+                masterSearch();
 
-        }
+            }
 
-        //doing the ajax
-        async function doAjax(input, reportname_, stylesWeLookFor_) {
-            return new Promise((resolve, reject) => {
-                $("#LoadingImage").show();
-                $.ajax({
-                    async: "true",
-                    type: "POST",
-                    url: "/Forecast/RcvJobs",
-                    data: JSON.stringify({ jobquery: input, stylesWeLookFor: stylesWeLookFor_, reportname: reportname_ }),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json",
+            //doing the ajax
+            async function doAjax(input, reportname_, stylesWeLookFor_) {
+                return new Promise((resolve, reject) => {
+                    $("#LoadingImage").show();
+                    $.ajax({
+                        async: "true",
+                        type: "POST",
+                        url: "/Forecast/RcvJobs",
+                        data: JSON.stringify({ jobquery: input, stylesWeLookFor: stylesWeLookFor_, reportname: reportname_ }),
+                        contentType: "application/json; charset=utf-8",
+                        dataType: "json",
 
-                    success: function (response) {
-                        $("#LoadingImage").hide();
+                        success: function (response) {
+                            $("#LoadingImage").hide();
 
-                        resolve(response);
+                            resolve(response);
 
 
-                        setTimeout(() => {
-                            //Add a class
-                            $('.dataTables_filter input').addClass('masterSearch')
-                        }, 30)
+                            setTimeout(() => {
+                                //Add a class
+                                $('.dataTables_filter input').addClass('masterSearch')
+                            }, 30)
 
-                    },
-                    failure: function (response) {
-                        alert(response.responseText);
-                    },
-                    error: function (response) {
-                        alert(response.responseText);
+                        },
+                        failure: function (response) {
+                            alert(response.responseText);
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+                })
+
+
+
+
+
+
+            }
+
+            //inside the RcvedJobs we have job floor and tags but for showing them to user we have to group them just by job  ==> not floor not tag
+            function getUniqDataForJob(input) {
+                var input_ = input;
+                var input_ = JSON.parse(JSON.stringify(ServerData))
+                var output = [];
+
+                input_.forEach(elm => {
+                    var flag = true;
+                    output.forEach(elm2 => {
+                        if (elm.job == elm2.job) {
+                            flag = false;
+                        }
+                    })
+                    if (flag) {
+                        output.push(elm);
+                    }
+                })
+                return output;
+            }
+
+            function getUniqDataForAllJobFloor(input) {
+                var input_ = input
+                var input_ = JSON.parse(JSON.stringify(input))
+                var output = [];
+
+                input_.forEach(elm => {
+                    var flag = true;
+                    output.forEach(elm2 => {
+                        if (elm.job == elm2.job && elm.floor == elm2.floor) {
+                            flag = false;
+                        }
+                    })
+                    if (flag) {
+                        output.push({ job: elm.job, floor: elm.floor, checked: "" });
+                    }
+                })
+
+                function compare(in1, in2) {
+                    if (in1.floor.toUpperCase() > in2.floor.toUpperCase()) return 1;
+                    if (in1.floor.toUpperCase() < in2.floor.toUpperCase()) return -1;
+
+                }
+                output.sort(compare);
+
+
+                return output;
+            }
+
+            function getUniqDataForAllJobs(input) {
+                var input_ = input
+                var input_ = JSON.parse(JSON.stringify(input))
+                var output = [];
+
+                input_.forEach(elm => {
+                    var flag = true;
+                    output.forEach(elm2 => {
+                        if (elm.job == elm2.job) {
+                            flag = false;
+                        }
+                    })
+                    if (flag) {
+                        output.push({ job: elm.job, checked: "" });
+                    }
+                })
+                return output;
+            }
+
+            function drawTable(input) {
+
+                AllEverySingleCheckBox = getUniqDataForAllJobFloor(input)
+                AllEverySingleCheckBoxForSelectAll = getUniqDataForAllJobs(input)
+
+
+                //console.log(prepedReturnArr)
+
+                $('#GlazingReport').DataTable({
+                    "destroy": true,
+                    select: "single",
+                    "searching": true,
+                    "paging": false,
+                    "info": false,
+                    "scrollY": "645px",
+                    "scrollCollapse": true,
+                    "columns": [
+                        {
+                            "className": 'details-control',
+                            "orderable": false,
+                            "data": null,
+                            "defaultContent": '',
+                        },
+                        { "data": "job" },
+                    ],
+                    "columnDefs": [
+                        { width: 100, targets: 0 }
+                    ],
+                    "order": [[1, 'asc']]
+                });
+                $('#GlazingReport').DataTable().draw();
+
+                //click on data tabel row
+                $('#GlazingReport tbody').on('click', 'td.details-control', function () {
+                    var tr = $(this).closest('tr');
+                    var tdi = tr.find("i.fa");
+                    var row = $('#GlazingReport').DataTable().row(tr);
+
+
+
+                    if (row.child.isShown()) {
+                        // This row is already open - close it
+                        row.child.hide();
+                        tr.removeClass('shown');
+                        tdi.first().removeClass('fa-minus-square');
+                        tdi.first().addClass('fa-plus-square');
+                    }
+                    else {
+                        // Open this row
+                        row.child(format(row.data(), input)).show();
+                        tr.addClass('shown');
+                        tdi.first().removeClass('fa-plus-square');
+                        tdi.first().addClass('fa-minus-square');
                     }
                 });
-            })
-            
-            
-          
 
-
-
-        }
-
-        //inside the RcvedJobs we have job floor and tags but for showing them to user we have to group them just by job  ==> not floor not tag
-        function getUniqDataForJob(input) {
-            var input_ = input;
-            var input_ = JSON.parse(JSON.stringify(ServerData))
-            var output = [];
-
-            input_.forEach(elm => {
-                var flag = true;
-                output.forEach(elm2 => {
-                    if (elm.job == elm2.job) {
-                        flag = false;
-                    }
-                })
-                if (flag) {
-                    output.push(elm);
-                }
-            })
-            return output;
-        }
-
-        function getUniqDataForAllJobFloor(input) {
-            var input_ = input
-            var input_ = JSON.parse(JSON.stringify(input))
-            var output = [];
-
-            input_.forEach(elm => {
-                var flag = true;
-                output.forEach(elm2 => {
-                    if (elm.job == elm2.job && elm.floor == elm2.floor) {
-                        flag = false;
-                    }
-                })
-                if (flag) {
-                    output.push({ job: elm.job, floor: elm.floor, checked: "" });
-                }
-            })
-
-            function compare(in1, in2) {
-                if (in1.floor.toUpperCase() > in2.floor.toUpperCase()) return 1;
-                if (in1.floor.toUpperCase() < in2.floor.toUpperCase()) return -1;
+                $('#GlazingReport').DataTable().clear();
+                $('#GlazingReport').DataTable().rows.add(getUniqDataForJob(input)).draw();
 
             }
-            output.sort(compare);
 
-
-            return output;
-        }
-
-        function getUniqDataForAllJobs(input) {
-            var input_ = input
-            var input_ = JSON.parse(JSON.stringify(input))
-            var output = [];
-
-            input_.forEach(elm => {
-                var flag = true;
-                output.forEach(elm2 => {
-                    if (elm.job == elm2.job) {
-                        flag = false;
-                    }
-                })
-                if (flag) {
-                    output.push({ job: elm.job, checked: "" });
-                }
-            })
-            return output;
-        }
-
-        function drawTable(input) {
-
-            AllEverySingleCheckBox = getUniqDataForAllJobFloor(input)
-            AllEverySingleCheckBoxForSelectAll = getUniqDataForAllJobs(input)
-
-
-            //console.log(prepedReturnArr)
-
-            $('#GlazingReport').DataTable({
-                "destroy": true,
-                select: "single",
-                "searching": true,
-                "paging": false,
-                "info": false,
-                "scrollY": "645px",
-                "scrollCollapse": true,
-                "columns": [
-                    {
-                        "className": 'details-control',
-                        "orderable": false,
-                        "data": null,
-                        "defaultContent": '',
-                    },
-                    { "data": "job" },
-                ],
-                "columnDefs": [
-                    { width: 100, targets: 0 }
-                ],
-                "order": [[1, 'asc']]
-            });
-            $('#GlazingReport').DataTable().draw();
-
-            //click on data tabel row
-            $('#GlazingReport tbody').on('click', 'td.details-control', function () {
-                var tr = $(this).closest('tr');
-                var tdi = tr.find("i.fa");
-                var row = $('#GlazingReport').DataTable().row(tr);
-
-
-
-                if (row.child.isShown()) {
-                    // This row is already open - close it
-                    row.child.hide();
-                    tr.removeClass('shown');
-                    tdi.first().removeClass('fa-minus-square');
-                    tdi.first().addClass('fa-plus-square');
-                }
-                else {
-                    // Open this row
-                    row.child(format(row.data(), input)).show();
-                    tr.addClass('shown');
-                    tdi.first().removeClass('fa-plus-square');
-                    tdi.first().addClass('fa-minus-square');
-                }
-            });
-
-            $('#GlazingReport').DataTable().clear();
-            $('#GlazingReport').DataTable().rows.add(getUniqDataForJob(input)).draw();
-
-        }
-
-        //click on green plus on each rows in tabel trigers this function
-        function format(d) {
-            var Internall = [];
-            var temp;
-            AllEverySingleCheckBoxForSelectAll.forEach(elm => {
-                if (elm.job == d.job) {
-                    temp = '<table style="border: 2px solid lightgray;" class="table table-hover nowrap innerTable" ><thead class="table-info" style="text-align: center;"><tr><th>Floors</th><th><div class="custom-control custom-checkbox custom-control-inline"><input   onclick="selectall(this)"   value="' + d.job + '" type="checkbox" class="custom-control-input" id="' + d.job + '"  ' + elm.checked + '><label class="custom-control-label" for="' + d.job + '" >Select all</label></div></th></tr></thead> <tbody>';
-                }
-            })
-            //`d` is the original data object for the row
-            //var temp = '<table style="border: 2px solid lightgray;" class="table table-hover nowrap" ><thead class="table-info" style="text-align: center;"><tr><th>Floors</th><th><input onclick="selectall(this)"  class="checkbox" value="' + d.job + '" type="checkbox" >Select all</th></tr></thead> <tbody>	';
-
-            AllEverySingleCheckBox.forEach(elm => {
-                if (elm.job == d.job) {
-                    temp = temp + '<tr><td style="text-align: center;" >' + elm.floor + '</td><td class="c " style="text-align: center;"><input onclick="selectsingle(this)"  class="' + elm.job + ' singleCheck" value=' + JSON.stringify(elm) + ' type="checkbox" ' + elm.checked + '></td></tr>'
-                }
-            })
-            temp = temp + ' </tbody></table>'
-            return temp
-        }
-
-        //check or uncheck the "select all" all floors for one job
-        function selectall(input) {
-            //changes it own property in the global variable
-            AllEverySingleCheckBoxForSelectAll.forEach(elm => {
-                if (elm.job == input.value) {
-                    if (input.checked == true) {
-                        elm.checked = "checked";
-                    }
-                    if (input.checked == false) {
-                        elm.checked = "";
-                    }
-                }
-            })
-            //changes all the chech boxes for floors on that job to checked or uncheked
-            for (item of document.getElementsByClassName(input.value)) {
-                if (input.checked == true) {
-                    item.checked = true;
-                }
-                if (input.checked == false) {
-                    item.checked = false;
-                }
-            }
-
-            //changing the status of the global variable AllEverySingleCheckBox
-            AllEverySingleCheckBox.forEach(elm => {
-                if (elm.job == input.value) {
-                    if (input.checked == true) {
-                        elm.checked = "checked";
-                    }
-                    if (input.checked == false) {
-                        elm.checked = "";
-                    }
-                }
-            })
-
-            updateUserView();
-        }
-
-        //if user clicks on every single floor it loops throw prepedReturnArr and changes the status of the checked property
-        function selectsingle(input) {
-
-            var temp = JSON.parse(input.value);
-
-            //change the status for that single item AllEverySingleCheckBox
-            AllEverySingleCheckBox.forEach(elm => {
-                if (elm.job == temp.job && elm.floor == temp.floor) {
-                    if (input.checked == false) {
-                        elm.checked = "";
-                    }
-                    if (input.checked == true) {
-                        elm.checked = "checked"
-                    }
-                }
-            })
-
-            //checking to see if there is need to change the status of the select all checkbox
-
-            //when user unchecks one box we have to make sure select all is uncheked
-            if (input.checked == false) {
-                var selectallcheckbox = document.getElementById(temp.job)
-                //if is extra condition check when user uncheks something for sure we have to uncheck select all
-                if (selectallcheckbox.checked) {
-                    selectallcheckbox.checked = false
-                }
-                //chanding the status of that select all check box in the global variable
+            //click on green plus on each rows in tabel trigers this function
+            function format(d) {
+                var Internall = [];
+                var temp;
                 AllEverySingleCheckBoxForSelectAll.forEach(elm => {
-                    if (elm.job == selectallcheckbox.value) {
-                        elm.checked = "";
+                    if (elm.job == d.job) {
+                        temp = '<table style="border: 2px solid lightgray;" class="table table-hover nowrap innerTable" ><thead class="table-info" style="text-align: center;"><tr><th>Floors</th><th><div class="custom-control custom-checkbox custom-control-inline"><input   onclick="selectall(this)"   value="' + d.job + '" type="checkbox" class="custom-control-input" id="' + d.job + '"  ' + elm.checked + '><label class="custom-control-label" for="' + d.job + '" >Select all</label></div></th></tr></thead> <tbody>';
                     }
                 })
+                //`d` is the original data object for the row
+                //var temp = '<table style="border: 2px solid lightgray;" class="table table-hover nowrap" ><thead class="table-info" style="text-align: center;"><tr><th>Floors</th><th><input onclick="selectall(this)"  class="checkbox" value="' + d.job + '" type="checkbox" >Select all</th></tr></thead> <tbody>	';
+
+                AllEverySingleCheckBox.forEach(elm => {
+                    if (elm.job == d.job) {
+                        temp = temp + '<tr><td style="text-align: center;" >' + elm.floor + '</td><td class="c " style="text-align: center;"><input onclick="selectsingle(this)"  class="' + elm.job + ' singleCheck" value=' + JSON.stringify(elm) + ' type="checkbox" ' + elm.checked + '></td></tr>'
+                    }
+                })
+                temp = temp + ' </tbody></table>'
+                return temp
             }
 
-
-            //when user chekces select box if all the others are selected we have to check select all
-            if (input.checked == true) {
-                var flag = true
-
-                //looping through other boxes in that class if all of them are checked checks the select all aswell
-                for (item of document.getElementsByClassName(temp.job)) {
-                    if (!item.checked) {
-                        flag = false
+            //check or uncheck the "select all" all floors for one job
+            function selectall(input) {
+                //changes it own property in the global variable
+                AllEverySingleCheckBoxForSelectAll.forEach(elm => {
+                    if (elm.job == input.value) {
+                        if (input.checked == true) {
+                            elm.checked = "checked";
+                        }
+                        if (input.checked == false) {
+                            elm.checked = "";
+                        }
                     }
-
+                })
+                //changes all the chech boxes for floors on that job to checked or uncheked
+                for (item of document.getElementsByClassName(input.value)) {
+                    if (input.checked == true) {
+                        item.checked = true;
+                    }
+                    if (input.checked == false) {
+                        item.checked = false;
+                    }
                 }
 
-                //flag will be true if all of the other boxes are true then it checks the select all aswell
-                if (flag) {
+                //changing the status of the global variable AllEverySingleCheckBox
+                AllEverySingleCheckBox.forEach(elm => {
+                    if (elm.job == input.value) {
+                        if (input.checked == true) {
+                            elm.checked = "checked";
+                        }
+                        if (input.checked == false) {
+                            elm.checked = "";
+                        }
+                    }
+                })
+
+                updateUserView();
+            }
+
+            //if user clicks on every single floor it loops throw prepedReturnArr and changes the status of the checked property
+            function selectsingle(input) {
+
+                var temp = JSON.parse(input.value);
+
+                //change the status for that single item AllEverySingleCheckBox
+                AllEverySingleCheckBox.forEach(elm => {
+                    if (elm.job == temp.job && elm.floor == temp.floor) {
+                        if (input.checked == false) {
+                            elm.checked = "";
+                        }
+                        if (input.checked == true) {
+                            elm.checked = "checked"
+                        }
+                    }
+                })
+
+                //checking to see if there is need to change the status of the select all checkbox
+
+                //when user unchecks one box we have to make sure select all is uncheked
+                if (input.checked == false) {
                     var selectallcheckbox = document.getElementById(temp.job)
-                    selectallcheckbox.checked = true
+                    //if is extra condition check when user uncheks something for sure we have to uncheck select all
+                    if (selectallcheckbox.checked) {
+                        selectallcheckbox.checked = false
+                    }
                     //chanding the status of that select all check box in the global variable
                     AllEverySingleCheckBoxForSelectAll.forEach(elm => {
                         if (elm.job == selectallcheckbox.value) {
-                            elm.checked = "checked";
+                            elm.checked = "";
+                        }
+                    })
+                }
+
+
+                //when user chekces select box if all the others are selected we have to check select all
+                if (input.checked == true) {
+                    var flag = true
+
+                    //looping through other boxes in that class if all of them are checked checks the select all aswell
+                    for (item of document.getElementsByClassName(temp.job)) {
+                        if (!item.checked) {
+                            flag = false
+                        }
+
+                    }
+
+                    //flag will be true if all of the other boxes are true then it checks the select all aswell
+                    if (flag) {
+                        var selectallcheckbox = document.getElementById(temp.job)
+                        selectallcheckbox.checked = true
+                        //chanding the status of that select all check box in the global variable
+                        AllEverySingleCheckBoxForSelectAll.forEach(elm => {
+                            if (elm.job == selectallcheckbox.value) {
+                                elm.checked = "checked";
+                            }
+                        })
+
+
+                    }
+
+                }
+
+                updateUserView();
+            }
+
+            //this function shows selected job(floorssss,)
+            function updateUserView() {
+                var selectedJobFloorsToShow = [];
+                var groupedByJob = [];
+
+                AllEverySingleCheckBox.forEach(elm => {
+                    if (elm.checked == "checked") {
+                        selectedJobFloorsToShow.push(elm)
+                    }
+                })
+
+                selectedJobFloorsToShow.forEach(elm => {
+                    var flag = true;
+
+                    groupedByJob.forEach(elm2 => {
+                        if (elm.job == elm2.job) { flag = false }
+                    })
+
+                    if (flag) { groupedByJob.push({ job: elm.job, floors: "" }) }
+                })
+
+
+
+
+                groupedByJob.forEach(elm => {
+                    var coutOfSelectedFloors = 0;
+                    var temp = "";
+                    var i = 0;
+
+                    selectedJobFloorsToShow.forEach(elm2 => {
+
+                        if (elm.job == elm2.job) {
+                            coutOfSelectedFloors++;
+
+                            if (i != 5) {
+
+                                temp = temp + " <a class='badge badges badge-pill badge-info'>" + elm2.floor + "</a>"
+
+                            } else if (i == 5) {
+                                i = 0;
+                                temp = temp + "<br>" + " <a class='badge badges badge-pill badge-info'>" + elm2.floor + "</a>"
+                            }
+                            i++;
+                        }
+                    })
+                    //elm.job = elm.job + "(" + coutOfSelectedFloors + ")"
+                    elm.job = elm.job + " <span class='badge badges badge-pill badge-info'> " + coutOfSelectedFloors + "</span>"
+                    elm.floors = temp;
+                })
+                
+
+                $('#SelectedGlazingReport').DataTable({
+                    "responsive": true,
+                    "destroy": true,
+                    "data": groupedByJob,
+                    "searching": true,
+                    "paging": false,
+                    "info": false,
+                    //"scrollY": "645px",
+                    // "scrollCollapse": true,
+                    "columns": [
+
+                        { "data": "job" },
+                        { "data": "floors" }
+
+                    ],
+
+                    "order": [[0, 'asc']]
+                });
+
+                $('#SelectedGlazingReport').DataTable().draw();
+                $('.dataTables_filter').hide();
+
+            }
+
+            //to prepare and send the data to bach end
+            async function search() {
+                //deep copy of the global variable AllEverySingleCheckBox to make sure nothing won't be changed
+                var input_ = JSON.parse(JSON.stringify(AllEverySingleCheckBox))
+                var out = [];
+                input_ = input_.filter(elm => { return elm.checked != "" });
+
+
+
+                input_.forEach(elm => {
+
+                    ServerData.forEach(elm2 => {
+                        if (elm.job == elm2.job && elm.floor == elm2.floor) {
+                            out.push(elm2);
+                        }
+
+                    })
+                })
+
+                //prepare model to send backend starts here
+
+                var out2 = []
+
+                //add unique jobs in array
+                //out2 contains all of the unique jobs
+                out.forEach(elm => {
+                    var flag = true
+
+                    out2.forEach(elm2 => {
+                        if (elm.job == elm2.job) {
+                            flag = false;
                         }
                     })
 
-
-                }
-
-            }
-
-            updateUserView();
-        }
-
-        //this function shows selected job(floorssss,)
-        function updateUserView() {
-            var selectedJobFloorsToShow = [];
-            var groupedByJob = [];
-
-            AllEverySingleCheckBox.forEach(elm => {
-                if (elm.checked == "checked") {
-                    selectedJobFloorsToShow.push(elm)
-                }
-            })
-
-            selectedJobFloorsToShow.forEach(elm => {
-                var flag = true;
-
-                groupedByJob.forEach(elm2 => {
-                    if (elm.job == elm2.job) { flag = false }
+                    if (flag) {
+                        out2.push({ job: elm.job })
+                    }
                 })
 
-                if (flag) { groupedByJob.push({ job: elm.job, floors: "" }) }
-            })
+                //saving detail in model for every job
+                //out2 containes the unique jobs from the user selected
 
-
-            
-
-            groupedByJob.forEach(elm => {
-                var coutOfSelectedFloors = 0;
-                var temp = "";
-                var i = 0;
-
-                selectedJobFloorsToShow.forEach(elm2 => {
-                    
-                    if (elm.job == elm2.job) {
-                        coutOfSelectedFloors++;
-                        
-                        if (i != 5 ) {
-                            
-                            temp = temp+ " <a class='badge badges badge-pill badge-info'>" + elm2.floor + "</a>" 
-                            
-                        } else if (i == 5) {
-                            i = 0;                            
-                            temp = temp + "<br>" +" <a class='badge badges badge-pill badge-info'>" + elm2.floor + "</a>"  
+                var out3 = []
+                out2.forEach(elm => {
+                    var detail = []
+                    out.forEach(elm2 => {
+                        if (elm.job == elm2.job) {
+                            detail.push({ floor: elm2.floor, tag: elm2.tag, style: elm2.style })
                         }
-                        i++;
-                    }
-                })
-                //elm.job = elm.job + "(" + coutOfSelectedFloors + ")"
-                elm.job = elm.job + " <span class='badge badges badge-pill badge-info'> " + coutOfSelectedFloors + "</span>"
-                elm.floors = temp;
-            })
-            console.log("hiiii", groupedByJob)
-
-            $('#SelectedGlazingReport').DataTable({
-                "responsive": true,
-                "destroy": true,
-                "data": groupedByJob,
-                "searching": true,
-                "paging": false,
-                "info": false,
-                //"scrollY": "645px",
-                // "scrollCollapse": true,
-                "columns": [
-
-                    { "data": "job" },
-                    { "data": "floors" }
-
-                ],
-
-                "order": [[0, 'asc']]
-            });
-
-            $('#SelectedGlazingReport').DataTable().draw();
-            $('.dataTables_filter').hide();
-
-        }
-
-        //to prepare and send the data to bach end
-        async function search() {
-            //deep copy of the global variable AllEverySingleCheckBox to make sure nothing won't be changed
-            var input_ = JSON.parse(JSON.stringify(AllEverySingleCheckBox))
-            var out = [];
-            input_ = input_.filter(elm => { return elm.checked != "" });
-
-
-
-            input_.forEach(elm => {
-
-                ServerData.forEach(elm2 => {
-                    if (elm.job == elm2.job && elm.floor == elm2.floor) {
-                        out.push(elm2);
-                    }
-
-                })
-            })
-
-            //prepare model to send backend starts here
-
-            var out2 = []
-
-            //add unique jobs in array
-            //out2 contains all of the unique jobs
-            out.forEach(elm => {
-                var flag = true
-
-                out2.forEach(elm2 => {
-                    if (elm.job == elm2.job) {
-                        flag = false;
-                    }
+                    })
+                    out3.push({ jobname_: elm.job, jobdetail_: detail })
                 })
 
-                if (flag) {
-                    out2.push({ job: elm.job })
+                var out4 = { allofthejobtables_: out3 }
+
+                var reportname_ = "";
+                var stylesWeLookFor_ = [];
+                var flagforselectingthereport = null;
+                var result = null;
+                reportname_ = document.getElementsByClassName("active")[0].innerHTML;
+
+                if (reportname_.includes("Awning and Door Forecast")) {
+                    flagforselectingthereport = true;
+                    document.querySelectorAll(".useroptionaw").forEach(elm => {
+                        if (elm.control.checked == true) {
+                            stylesWeLookFor_.push(elm.innerHTML)
+                        }
+                    })
                 }
-            })
-
-            //saving detail in model for every job
-            //out2 containes the unique jobs from the user selected
-
-            var out3 = []
-            out2.forEach(elm => {
-                var detail = []
-                out.forEach(elm2 => {
-                    if (elm.job == elm2.job) {
-                        detail.push({ floor: elm2.floor, tag: elm2.tag, style: elm2.style })
-                    }
-                })
-                out3.push({ jobname_: elm.job, jobdetail_: detail })
-            })
-
-            var out4 = { allofthejobtables_: out3 }
-
-            var reportname_ = "";
-            var stylesWeLookFor_ = [];
-            var flagforselectingthereport = null;
-            var result = null;
-            reportname_ = document.getElementsByClassName("active")[0].innerHTML;
-           
-            if (reportname_.includes("Awning and Door Forecast")) {
-                flagforselectingthereport = true;
-                document.querySelectorAll(".useroptionaw").forEach(elm => {
-                    if (elm.control.checked == true) {
-                        stylesWeLookFor_.push(elm.innerHTML)
-                    }
-                })
-            }
-            else if (reportname_.includes("Infill Forecast")) {
-                flagforselectingthereport = false;
-                document.querySelectorAll(".useroptionin").forEach(elm => {
-                    if (elm.control.checked == true) {
-                        stylesWeLookFor_.push(elm.innerHTML)
-                    }
-                })
-            }
-
-            
-            if (stylesWeLookFor_.length == 0) {
-                //show modal and ask user to select style at least on
-                alert("for the " + reportname_ + "select minimum one style");
-            } else {
-                result = await doAjax(JSON.stringify(out4), reportname_, stylesWeLookFor_)
-                if (flagforselectingthereport) {
-                    //call function to draw the first report 
-                    drawAwningAndDoorForecast(result)
-                } else if (!flagforselectingthereport) {
-                    //call function to draw secound report
+                else if (reportname_.includes("Infill Forecast")) {
+                    flagforselectingthereport = false;
+                    document.querySelectorAll(".useroptionin").forEach(elm => {
+                        if (elm.control.checked == true) {
+                            stylesWeLookFor_.push(elm.innerHTML)
+                        }
+                    })
                 }
-            }
-          
-        }
 
-         //drawing the  Awning and Door Forecast report results
+
+                if (stylesWeLookFor_.length == 0) {
+                    //show modal and ask user to select style at least on
+                    alert("for the " + reportname_ + "select minimum one style");
+                } else {
+                    result = await doAjax(JSON.stringify(out4), reportname_, stylesWeLookFor_)
+                    if (flagforselectingthereport) {
+                        //call function to draw the first report
+                        drawAwningAndDoorForecast(result)
+                    } else if (!flagforselectingthereport) {
+                        //call function to draw secound report
+                    }
+                }
+
+            }
+
+            //drawing the  Awning and Door Forecast report results
             function drawAwningAndDoorForecast(input) {
-
+            
                 dataForAwnigAndDoors = input;
                 var test23 = [{ style: "swingdoor_", qty: input.swingdoor_.totalofthistype }, { style: "awningall_", qty: input.awningall_.totalofthistype }];
                 //main data table that is showing awnigall and swing doors
@@ -607,7 +606,7 @@
                     }
                     else {
                         // Open this row
-                        row.child(netsedForecat(row.data()), input).show();
+                        row.child(netsedForecat(row.data())).show();
                         tr.addClass('shown');
                         tdi.first().removeClass('fa-plus-square');
                         tdi.first().addClass('fa-minus-square');
@@ -617,81 +616,131 @@
                 $('#drawAwningAndDoorForecastTable').DataTable().clear();
                 $('#drawAwningAndDoorForecastTable').DataTable().rows.add(test23).draw();
 
-
-         
-
             }
 
             //for responsive table for awnings report
-        function netsedForecat(input) {
+            function netsedForecat(input) {
+                console.log("hiiii", input)
+                if (input.style.includes("awningall_")) {
+                    var table = `<table  class="table table-hover table-bordered " style="border: solid 2px lightgray;text-align: center; ">
+                        <thead class="table-info" style="text-align: center;">
+                            <tr>
+                                <th>expand</th>
+                                <th>AwningType</th>
+                                <th>qty</th>
+                            </tr>
+                        </thead>
+                        <tbody >
+                            <tr class="awningf92_">
+                               <th id="awningf92_" onclick="myFunction(this)"><i class="fa fa-plus-circle" style="color:green;"></i></th>
+                                <th>awningf92</th>
+                                <th>`+ dataForAwnigAndDoors.awningf92_.totalofthistype + `</th>
+                            </tr>
+                            <tr class="awningm90_">
+                               <th id="awningm90_" onclick="myFunction(this)"><i class="fa fa-plus-circle" style="color:green;"></i></th>
+                                <th>awningm90</th>
+                                <th>`+ dataForAwnigAndDoors.awningm90_.totalofthistype + `</th>
+                            </tr>
+                            <tr class="awningmetra_">
+                               <th id="awningmetra_" onclick="myFunction(this)"><i class="fa fa-plus-circle" style="color:green;"></i></th>
+                                <th>awningmetra</th>
+                                <th>`+ dataForAwnigAndDoors.awningmetra_.totalofthistype + `</th>
+                            </tr>
+                            <tr class="awningquest_">
+                               <th id="awningquest_" onclick="myFunction(this)"><i class="fa fa-plus-circle" style="color:green;"></i></th>
+                                <th>awningquest</th>
+                                <th>`+ dataForAwnigAndDoors.awningquest_.totalofthistype + `</th>
+                            </tr>
+                        </tbody>
+                    </table>`
+                } else if (input.style.includes("swingdoor_")) {
+                    var table = `<table  class="table table-hover table-bordered " style="border: solid 2px lightgray;text-align: center; ">
+                        <thead class="table-info" style="text-align: center;">
+                            <tr>
+                                <th>job</th>
+                                <th>floor</th>
+                                <th>qty</th>
+                            </tr>
+                        </thead>
+                        <tbody>`
+                                               
+                    dataForAwnigAndDoors.swingdoor_.jobfloors_.forEach(elm => {
+                            table += "<tr><th>" + elm.job_ + "</th><th>" + elm.floor_ + "</th><th>" + elm.qty_ + "</th></tr>"
+                        })
 
-            var table = `<table  class="table table-hover table-bordered " style="border: solid 2px lightgray;text-align: center; ">
-                    <thead class="table-info" style="text-align: center;">
-                        <tr>
-                            <th>expand</th>
-                            <th>AwningType</th>
-                            <th>qty</th>
-                        </tr>
-                    </thead>
-                    <tbody> 
-                        <tr class="12345">
-                            <th onclick="expand(12345)">expand</th>
-                            <th>awningf92_</th>
-                            <th>`+ dataForAwnigAndDoors.awningf92_.totalofthistype+`</th>
-                        </tr>
-
-                        <tr>
-                            <th onclick="expand(this)">expand</th>
-                            <th>awningm90_</th>
-                            <th>`+ dataForAwnigAndDoors.awningm90_.totalofthistype +`</th>
-                        </tr>
-                        <tr>
-                            <th onclick="expand(this)">expand</th>
-                            <th>awningmetra_</th>
-                            <th>`+ dataForAwnigAndDoors.awningmetra_.totalofthistype +`</th>
-                        </tr>
-                        <tr>
-                            <th onclick="expand(this)">expand</th>
-                            <th>awningquest_</th>
-                            <th>`+ dataForAwnigAndDoors.awningquest_.totalofthistype +`</th>
-                        </tr>
+                    table += `</tbody>
+                    </table>`
                     
-                           
-                    </tbody>
-                </table>`
-
-                console.log(dataForAwnigAndDoors)    
-
+                }
+                          
                 return table
-                    
+            
             }
 
-        function expand(input) {
-            console.log(document.querySelectorAll(".12345"))
-
-            var el = document.createElement("tr");
-            el.innerHTML = `<table class="table table-hover table-bordered " style="border: solid 2px lightgray;text-align: center; ">
-            <thead class="table-info" style="text-align: center;">
-                <tr>
-                <td>job</td>
-                <td>floor</td>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-            </table>`
-            var div = document.getElementById("12345");
-            insertAfter(div, el);
-
             
+        function myFunction(aaa) {
+            //if qty for selected awning is 0 do not change the color or anything
+            if (aaa.nextElementSibling.nextElementSibling.innerHTML != 0) {
+                if (aaa.childNodes[0].className.includes("fa fa-minus-circle")) {
+
+                    aaa.childNodes[0].className = "fa fa-plus-circle"
+                    aaa.childNodes[0].style = "color:green"
+                    document.querySelectorAll("." + aaa.id)[0].nextSibling.remove()
+
+                } else if (aaa.childNodes[0].className.includes("fa fa-plus-circle")) {
+
+                    aaa.childNodes[0].className = "fa fa-minus-circle"
+                    aaa.childNodes[0].style = "color:red"
+                    //initializing the second nested table                       
+                    var el = document.createElement("tr");
+                    var table = document.createElement("table")
+                    table.style.width = "100%";
+                    table.style.margin = "10px";
+                    table.innerHTML = "<tr><th>job</th><th>floor</th><th>qty</th></tr>"
+                    if (aaa.id.includes("awningf92_")) {
+                        dataForAwnigAndDoors.awningf92_.jobfloors_.forEach(elm => {
+                            table.innerHTML += "<tr><th>" + elm.job_ + "</th><th>" + elm.floor_ + "</th><th>" + elm.qty_ + "</th></tr>"
+                        })
+                    }
+                    if (aaa.id.includes("awningm90_")) {
+                        dataForAwnigAndDoors.awningm90_.jobfloors_.forEach(elm => {
+                            table.innerHTML += "<tr><th>" + elm.job_ + "</th><th>" + elm.floor_ + "</th><th>" + elm.qty_ + "</th></tr>"
+                        })
+                    }
+                    if (aaa.id.includes("awningmetra_")) {
+                        dataForAwnigAndDoors.awningmetra_.jobfloors_.forEach(elm => {
+                            table.innerHTML += "<tr><th>" + elm.job_ + "</th><th>" + elm.floor_ + "</th><th>" + elm.qty_ + "</th></tr>"
+                        })
+                    }
+                    if (aaa.id.includes("awningquest_")) {
+                        dataForAwnigAndDoors.awningquest_.jobfloors_.forEach(elm => {
+                            table.innerHTML += "<tr><th>" + elm.job_ + "</th><th>" + elm.floor_ + "</th><th>" + elm.qty_ + "</th></tr>"
+                        })
+                    }
+
+
+                    el.appendChild(table);
+
+                    var div = document.querySelectorAll("." + aaa.id)[0];
+
+                    insertAfter(div, el);
+                }
+            } else {
+                alert("There isn't anything there qty of " + aaa.nextElementSibling.innerHTML+" is 0")
+            } 
+                                      
         }
-        // do not touch it
+
+        // do not touch it adds element to the after axisting element
         function insertAfter(referenceNode, newNode) {
             referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
         }
+
     </script>
 
     <style>
+     
+
         table.dataTable td {
             word-break: break-word;
         }
@@ -814,6 +863,7 @@
 
 </head>
 <body>
+
     <div class="header-banner-small"></div>
     <div>
         <nav class="navbar navbar-expand-sm">
@@ -829,7 +879,7 @@
         </nav>
     </div>
     <div id="pageHeader" class="container"><h2 class="heading">Forecast Status</h2></div>
-   
+
 
 
     <div class="container toolbar" style="display:flex;justify-content:space-around;">
@@ -837,7 +887,7 @@
             <div class="btn-group btn-toggle">
                 <button class="btn btn-md  btn-outline-info active" id="awningDoor">Awning and Door Forecast</button>
                 <button class="btn btn-md " id="infill">Infill Forecast</button>
-                
+
             </div>
             <div style="padding:20px;">
                 <div id='awningDoorCheckbox' style='display:block'>
@@ -872,9 +922,9 @@
             </div>
         </div>
         <div class="searchButton"><button class="btn btn-md btn-outline-info pull-right" onclick="search()">&nbsp;Submit</button></div>
-        
+
         <div>
-  
+
         </div>
     </div>
 
@@ -933,21 +983,18 @@
         <table id="drawAwningAndDoorForecastTable" class="table table-hover table-bordered " style="border: solid 2px lightgray;text-align: center; ">
             <thead class="table-info" style="text-align: center;">
                 <tr>
-                
                 </tr>
             </thead>
             <tbody>
             </tbody>
         </table>
 
-        
-         
-
     </section>
     <div class="container-fluid">
         <input type="hidden" id="customInput" data-value="@JsonConvert.SerializeObject(Model)" />
     </div>
 
+    
 </body>
 
 </html>
